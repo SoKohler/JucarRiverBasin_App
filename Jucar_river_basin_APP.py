@@ -72,7 +72,7 @@ elif menu == "Alarcon’s reservoir":
     # Sample Data for Visualization
     # Input Controls
     x_data = st.slider("Select Environmental Flow (m³/s)", 0, 10, 0.1)
-    y_data = [(x_data / 100) * x for x in range(0, 11)]
+    y_data = [(x_data / 100)]
 
     # Line Chart
     st.subheader("Line Chart Example")
