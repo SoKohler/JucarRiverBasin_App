@@ -8,8 +8,7 @@ Created on Thu Dec 19 18:06:32 2024
 #streamlit run Jucar_river_basin_APP.py
 #git save
 
-import os
-os.chdir(r'C:\Users\sophi\myCloud\Sophia\Thesis\Model\Jucar_model\Adrià')
+
 #import Python System Dynamics library to run Vensim
 import pysd
 import streamlit as st
@@ -28,15 +27,15 @@ for row in sheet.iter_rows():
     for cell in row:
         if cell.data_type == 'f':  # if the cell contains a formula
             cell.value = cell.value  #replace the formula by the static value
-workbook.save('data.xlsx')
+workbook.save(r'C:\Users\sophi\myCloud\Sophia\Thesis\Model\Jucar_model\Adrià\data.xlsx')
 
 
 # Import the data with all sheets (type = dictionary)
-data_all = pd.read_excel("data.xlsx", sheet_name=None, engine="openpyxl")# List of sheet names
+data_all = pd.read_excel(r"C:\Users\sophi\myCloud\Sophia\Thesis\Model\Jucar_model\Adrià\data.xlsx", sheet_name=None, engine="openpyxl")# List of sheet names
 sheet_names = list(data_all.keys())
 # Create the variable for each of the sheets (globals() allows you to modify the global namespace))
 for sheet_name in sheet_names:
-    globals()[f"data_{sheet_name}"] = pd.read_excel("data.xlsx", sheet_name=sheet_name,skiprows=1, engine="openpyxl")
+    globals()[f"data_{sheet_name}"] = pd.read_excel(r"C:\Users\sophi\myCloud\Sophia\Thesis\Model\Jucar_model\Adrià\data.xlsx", sheet_name=sheet_name,skiprows=1, engine="openpyxl")
     print(f"data_{sheet_name}")
 
 ### 2. Read Vensim Model
@@ -124,12 +123,12 @@ elif menu == "Alarcon’s reservoir":
     if st.sidebar.button("Run Simulation"):
         # ----------------- UPDATE EXCEL FILE ----------------- #
         # Load the Excel file
-        data_Demandas = pd.read_excel("data.xlsx", skiprows=1, sheet_name="Demandas")
+        data_Demandas = pd.read_excel(r"C:\Users\sophi\myCloud\Sophia\Thesis\Model\Jucar_model\Adrià\data.xlsx", skiprows=1, sheet_name="Demandas")
         # Update the "QecolAlar" value
         data_Demandas.loc[data_Demandas['Parameter'] == "QecolAlar", 'Value'] = qecolAlar_value
     
         # Save the updated Excel file
-        data_Demandas.to_excel("data.xlsx", sheet_name="Demandas", index=False)    
+        data_Demandas.to_excel(r"C:\Users\sophi\myCloud\Sophia\Thesis\Model\Jucar_model\Adrià\data.xlsx", sheet_name="Demandas", index=False)    
         # ----------------- RERUN VENSIM MODEL ----------------- #
         # Pass the updated QecolAlar value as a parameter
         variables_model = vensim_model.run(params={'INITIAL TIME': 1,'FINAL TIME': 120,'TIME STEP': 1})
