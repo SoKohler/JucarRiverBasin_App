@@ -9,8 +9,6 @@ Created on Thu Dec 19 18:06:32 2024
 #git save
 
 
-import os
-os.chdir(r'C:\Users\sophi\myCloud\Sophia\Thesis\Model\Jucar_model\Adrià')
 #import Python System Dynamics library to run Vensim
 import pysd
 #for interface
