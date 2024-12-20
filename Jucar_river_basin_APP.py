@@ -4,7 +4,9 @@ Created on Thu Dec 19 18:06:32 2024
 
 @author: sophi
 """
-#cd myCloud\Sophia\Thesis\Model\Jucar_model\Adrià\ streamlit run bash.py
+#cd myCloud\Sophia\Thesis\Model\Jucar_model\Adrià\
+#streamlit run Jucar_river_basin_APP.py
+#git save
 
 import streamlit as st
 import pandas as pd
@@ -137,3 +139,6 @@ elif menu == "Data Upload":
         # Basic Summary
         st.subheader("Data Summary")
         st.write(user_df.describe())
+
+
+#treitoiejtjeotektoet
