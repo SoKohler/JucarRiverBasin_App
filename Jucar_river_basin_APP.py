@@ -18,16 +18,16 @@ from streamlit_echarts import st_echarts
 import openpyxl
 from openpyxl import load_workbook
 
-# ### 1.Read data
-# #transform all the formulas into static number 
-# workbook = load_workbook('data_formulas.xlsx', data_only=True) 
-# sheet = workbook.active #it will read all the sheets 
-# #overwrite formulas with values
-# for row in sheet.iter_rows():
-#     for cell in row:
-#         if cell.data_type == 'f':  # if the cell contains a formula
-#             cell.value = cell.value  #replace the formula by the static value
-# workbook.save(r'C:\Users\sophi\myCloud\Sophia\Thesis\Model\Jucar_model\Adrià\data.xlsx')
+### 1.Read data
+#transform all the formulas into static number 
+workbook = load_workbook('data_formulas.xlsx', data_only=True) 
+sheet = workbook.active #it will read all the sheets 
+#overwrite formulas with values
+for row in sheet.iter_rows():
+    for cell in row:
+        if cell.data_type == 'f':  # if the cell contains a formula
+            cell.value = cell.value  #replace the formula by the static value
+workbook.save(r'C:\Users\sophi\myCloud\Sophia\Thesis\Model\Jucar_model\Adrià\data.xlsx')
 
 
 # Import the data with all sheets (type = dictionary)
@@ -154,21 +154,6 @@ elif menu == "Alarcon’s reservoir":
         ax.legend()
         st.pyplot(fig)
     
-    
-        # # Line Chart
-        # st.subheader("Line Chart Example")
-        # fig, ax = plt.subplots()
-        # ax.plot(x_data, y_data, label="y = x²", color="blue")
-        # ax.set_title("Line Chart Example")
-        # ax.set_xlabel("X Axis")
-        # ax.set_ylabel("Y Axis")
-        # ax.legend()
-        # st.pyplot(fig)
-    
-        # # Display Metrics
-        # st.subheader("Key Metrics")
-        # col1, col2, col3 = st.columns(3)
-        # col1.metric("Total Flow", "350 m³/s", "+10%")
-        # col2.metric("Deficit Reduction", "12%", "-5%")
+
 
     
