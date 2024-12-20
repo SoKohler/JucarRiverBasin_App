@@ -70,8 +70,10 @@ elif menu == "Alarcon’s reservoir":
     st.write("xjgojdsg")
 
     # Sample Data for Visualization
-    x_data = list(range(1, 11))
-    y_data = [i**2 for i in x_data]
+    # Input Controls
+    x_data = st.slider("Select Environmental Flow (m³/s)", 50, 200, 100)
+    y_data = st.slider("Agricultural Demand Reduction (%)", 10, 50, 30)
+
 
     # Line Chart
     st.subheader("Line Chart Example")
@@ -95,9 +97,7 @@ elif menu == "Scenario Analysis":
     st.header("📈 Scenario Analysis")
     st.write("Adjust the parameters below to analyze different scenarios.")
 
-    # Input Controls
-    scenario_value = st.slider("Select Environmental Flow (m³/s)", 50, 200, 100)
-    demand_reduction = st.slider("Agricultural Demand Reduction (%)", 10, 50, 30)
+
 
     # Visualization
     x_scenario = list(range(2020, 2031))
