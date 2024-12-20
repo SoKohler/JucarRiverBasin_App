@@ -11,11 +11,15 @@ Created on Thu Dec 19 18:06:32 2024
 
 #import Python System Dynamics library to run Vensim
 import pysd
-
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 from streamlit_echarts import st_echarts
+
+### 2. Read Vensim Model
+vensim_model = pysd.read_vensim('WEFE Jucar (Simple).mdl')    
+variables_model = vensim_model.run(params={'INITIAL TIME': 1,'FINAL TIME': 120,'TIME STEP': 1})
+
 
 # Page configuration
 st.set_page_config(page_title="Júcar River Basin Water management visualization tool", layout="centered",initial_sidebar_state="expanded")
@@ -28,7 +32,7 @@ st.title("Júcar River Basin - Water management visualization tool")
 ### 0. Home page (explain the content of the app and the model)
 if menu == "Home":
     st.header("0. Home page")
-    # Create Tabs in Home Section
+    # Tabs in Home Section
     tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["Vensim model - View 1", "Vensim model - View 2", "Vensim model - View 3","Vensim model - View 4","Vensim model - View 3","Vensim model - View 5","Vensim model - View 6"])
     
     with tab1:
@@ -73,7 +77,6 @@ elif menu == "Alarcon’s reservoir":
     st.header("1. Alarcon’s reservoir")
     st.write("xjgojdsg")
 
-    # Sample Data for Visualization
     # Input Controls
     initial_env_flow = 5.8
     x_data = st.slider("Select Environmental Flow (m³/s)", 0.0, 10.0, initial_env_flow, 0.1) # min, max, default, step
