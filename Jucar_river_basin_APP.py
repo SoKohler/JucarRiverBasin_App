@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 from streamlit_echarts import st_echarts
 
 # Page configuration
-st.set_page_config(page_title="Júcar River Basin Water management visualization tool", layout="centered")
+st.set_page_config(page_title="Júcar River Basin Water management visualization tool", layout="centered",initial_sidebar_state="expanded")
 
 ### Dynamic navigation menu 
 menu = st.sidebar.radio( "Menu",
