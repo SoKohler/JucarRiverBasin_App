@@ -56,3 +56,21 @@ DéfQecolAlar = variables_model["DéfQecolAlar"]
 
 QecolAlar = data_Demandas["QecolAlar"]
 
+
+    
+        # # Line Chart
+        # st.subheader("Line Chart Example")
+        # fig, ax = plt.subplots()
+        # ax.plot(x_data, y_data, label="y = x²", color="blue")
+        # ax.set_title("Line Chart Example")
+        # ax.set_xlabel("X Axis")
+        # ax.set_ylabel("Y Axis")
+        # ax.legend()
+        # st.pyplot(fig)
+    
+        # # Display Metrics
+        # st.subheader("Key Metrics")
+        # col1, col2, col3 = st.columns(3)
+        # col1.metric("Total Flow", "350 m³/s", "+10%")
+        # col2.metric("Deficit Reduction", "12%", "-5%")
+
