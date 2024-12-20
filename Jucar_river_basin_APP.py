@@ -28,7 +28,7 @@ st.title("Júcar River Basin - Water management visualization tool")
 if menu == "Home":
     st.header("0. Home page")
     # Create Tabs in Home Section
-    tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["Overview", "Vensim model - View 1", "Vensim model - View 2", "Vensim model - View 3","Vensim model - View 4","Vensim model - View 3","Vensim model - View 5","Vensim model - View 6"])
+    tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["Vensim model - View 1", "Vensim model - View 2", "Vensim model - View 3","Vensim model - View 4","Vensim model - View 3","Vensim model - View 5","Vensim model - View 6"])
     
     with tab1:
         st.header("Overview")
