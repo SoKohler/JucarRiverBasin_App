@@ -167,7 +167,6 @@ elif menu == "Alarcon’s reservoir":
         # col1, col2, col3 = st.columns(3)
         # col1.metric("Total Flow", "350 m³/s", "+10%")
         # col2.metric("Deficit Reduction", "12%", "-5%")
-        # col3.metric("Population Growth", "2.5%", "Stable")
-    flmvfmv
+
     
     
