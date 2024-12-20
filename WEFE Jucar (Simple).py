@@ -547,7 +547,7 @@ def n2():
     units="Hm3/Month",
     comp_type="Auxiliary",
     comp_subtype="Normal",
-    depends_on={"reservatous": 1, "sueltastous": 1, "aliviadero_tous": 1},
+    depends_on={"reservatous": 1, "aliviadero_tous": 1, "sueltastous": 1},
 )
 def sal_tous():
     """
@@ -641,8 +641,8 @@ def suminvalencia():
         "acuifero_auxiliar": 1,
         "total_demanda_urbana": 1,
         "cjtreal": 3,
-        "sumin_sagunto": 2,
         "suminvalencia": 2,
+        "sumin_sagunto": 2,
     },
 )
 def sumin_cjt():
@@ -1268,9 +1268,9 @@ def reservacontreras():
     comp_subtype="Normal",
     depends_on={
         "tous_1": 1,
+        "perdidas_t": 1,
         "time_step": 1,
         "ent_tous": 1,
-        "perdidas_t": 1,
         "sueltastous": 1,
     },
 )
@@ -1319,12 +1319,12 @@ _ext_data_convenio_alarcon = ExtData(
     depends_on={
         "alarcon_1": 2,
         "convenio_alarcon": 1,
-        "sustitumancha": 1,
         "albacete": 2,
+        "sustitumancha": 1,
+        "ent_alar": 1,
+        "perdidas_a": 1,
         "time_step": 1,
         "minimo_alarcon": 1,
-        "perdidas_a": 1,
-        "ent_alar": 1,
     },
 )
 def sal_ats():
@@ -1359,10 +1359,10 @@ def aliviaderosalarcon():
     comp_subtype="Normal",
     depends_on={
         "alarcon_1": 1,
+        "ent_alar": 1,
         "sueltasalarcon": 1,
         "time_step": 1,
         "sal_ats": 1,
-        "ent_alar": 1,
     },
 )
 def volumen_esperado_alarcon():
@@ -1816,8 +1816,8 @@ def demanda_valencia():
     depends_on={
         "total_recurso_disponible_ribera": 2,
         "demanda_total_ribera": 1,
-        "ribera_baja_mod": 2,
         "sequia_bombeos_adicionales": 3,
+        "ribera_baja_mod": 2,
         "pesorbb": 1,
     },
 )
@@ -1840,9 +1840,9 @@ def suminriberabaja():
     depends_on={
         "total_recurso_disponible_ribera": 2,
         "demanda_total_ribera": 1,
-        "pesoraa": 2,
         "sequia_bombeos_adicionales": 3,
         "ribera_alta_mod": 2,
+        "pesoraa": 2,
     },
 )
 def suminriberaalta():
@@ -1905,9 +1905,9 @@ def ent_con():
     depends_on={
         "sustitumancha": 1,
         "sal_ats": 1,
+        "albacete": 1,
         "senal_de_estado": 1,
         "defalbacete": 1,
-        "albacete": 1,
     },
 )
 def defmancha():
@@ -2606,8 +2606,8 @@ def variationv():
         "sal_tous": 2,
         "total_demanda_urbana": 1,
         "sumsubt": 2,
-        "sumin_sagunto": 1,
         "cjt": 1,
+        "sumin_sagunto": 1,
         "suminvalencia": 1,
     },
 )

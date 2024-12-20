@@ -41,6 +41,31 @@ for sheet_name in sheet_names:
 ### 2. Read Vensim Model
 vensim_model = pysd.read_vensim('WEFE Jucar (Simple).mdl')    
 variables_model = vensim_model.run(params={'INITIAL TIME': 1,'FINAL TIME': 120,'TIME STEP': 1})
+### 2.Test change QecolAlar (environmental flow downstream of Alarcon’s reservoir) = constant value
+
+QecolAlar = data_Demandas["QecolAlar"]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # Page configuration
