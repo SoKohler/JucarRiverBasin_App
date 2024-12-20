@@ -75,7 +75,7 @@ if menu == "Home":
 ### 1. Alarcon’s reservoir
 elif menu == "Alarcon’s reservoir":
     st.header("1. Alarcon’s reservoir")
-    st.write("This is the dashboard displaying key visualizations and metrics.")
+    st.write("xjgojdsg")
 
     # Sample Data for Visualization
     x_data = list(range(1, 11))
@@ -98,68 +98,68 @@ elif menu == "Alarcon’s reservoir":
     col2.metric("Deficit Reduction", "12%", "-5%")
     col3.metric("Population Growth", "2.5%", "Stable")
 
-# --- Scenario Analysis Page ---
-elif menu == "Scenario Analysis":
-    st.header("📈 Scenario Analysis")
-    st.write("Adjust the parameters below to analyze different scenarios.")
+# # --- Scenario Analysis Page ---
+# elif menu == "Scenario Analysis":
+#     st.header("📈 Scenario Analysis")
+#     st.write("Adjust the parameters below to analyze different scenarios.")
 
-    # Input Controls
-    scenario_value = st.slider("Select Environmental Flow (m³/s)", 50, 200, 100)
-    demand_reduction = st.slider("Agricultural Demand Reduction (%)", 10, 50, 30)
+#     # Input Controls
+#     scenario_value = st.slider("Select Environmental Flow (m³/s)", 50, 200, 100)
+#     demand_reduction = st.slider("Agricultural Demand Reduction (%)", 10, 50, 30)
 
-    # Visualization
-    x_scenario = list(range(2020, 2031))
-    y_scenario = [scenario_value - (demand_reduction / 100) * x for x in range(0, 11)]
+#     # Visualization
+#     x_scenario = list(range(2020, 2031))
+#     y_scenario = [scenario_value - (demand_reduction / 100) * x for x in range(0, 11)]
 
-    options = {
-        "title": {"text": "Scenario Analysis Results"},
-        "xAxis": {"type": "category", "data": x_scenario},
-        "yAxis": {"type": "value"},
-        "series": [{"data": y_scenario, "type": "line", "name": "Flow"}],
-    }
-    st_echarts(options=options, height="400px")
+#     options = {
+#         "title": {"text": "Scenario Analysis Results"},
+#         "xAxis": {"type": "category", "data": x_scenario},
+#         "yAxis": {"type": "value"},
+#         "series": [{"data": y_scenario, "type": "line", "name": "Flow"}],
+#     }
+#     st_echarts(options=options, height="400px")
 
-# --- Comparisons Page ---
-elif menu == "Comparisons":
-    st.header("📊 Chart Comparisons")
-    st.write("Compare multiple charts and datasets side by side.")
+# # --- Comparisons Page ---
+# elif menu == "Comparisons":
+#     st.header("📊 Chart Comparisons")
+#     st.write("Compare multiple charts and datasets side by side.")
 
-    col1, col2 = st.columns(2)
+#     col1, col2 = st.columns(2)
 
-    # Bar Chart
-    with col1:
-        st.subheader("Bar Chart Example")
-        data = {"Category": ["A", "B", "C"], "Values": [10, 20, 30]}
-        df = pd.DataFrame(data)
-        st.bar_chart(df.set_index("Category"))
+#     # Bar Chart
+#     with col1:
+#         st.subheader("Bar Chart Example")
+#         data = {"Category": ["A", "B", "C"], "Values": [10, 20, 30]}
+#         df = pd.DataFrame(data)
+#         st.bar_chart(df.set_index("Category"))
 
-    # Pie Chart
-    with col2:
-        st.subheader("Pie Chart Example")
-        pie_options = {
-            "title": {"text": "Pie Chart Example"},
-            "series": [
-                {"type": "pie", "radius": "50%", "data": [
-                    {"value": 10, "name": "A"},
-                    {"value": 20, "name": "B"},
-                    {"value": 30, "name": "C"},
-                ]}
-            ],
-        }
-        st_echarts(options=pie_options, height="400px")
+#     # Pie Chart
+#     with col2:
+#         st.subheader("Pie Chart Example")
+#         pie_options = {
+#             "title": {"text": "Pie Chart Example"},
+#             "series": [
+#                 {"type": "pie", "radius": "50%", "data": [
+#                     {"value": 10, "name": "A"},
+#                     {"value": 20, "name": "B"},
+#                     {"value": 30, "name": "C"},
+#                 ]}
+#             ],
+#         }
+#         st_echarts(options=pie_options, height="400px")
 
-# --- Data Upload Page ---
-elif menu == "Data Upload":
-    st.header("📋 Data Upload")
-    st.write("Upload a dataset for analysis.")
+# # --- Data Upload Page ---
+# elif menu == "Data Upload":
+#     st.header("📋 Data Upload")
+#     st.write("Upload a dataset for analysis.")
 
-    uploaded_file = st.file_uploader("Choose a CSV file", type=["csv"])
-    if uploaded_file is not None:
-        user_df = pd.read_csv(uploaded_file)
-        st.write("Uploaded Data:")
-        st.dataframe(user_df)
+#     uploaded_file = st.file_uploader("Choose a CSV file", type=["csv"])
+#     if uploaded_file is not None:
+#         user_df = pd.read_csv(uploaded_file)
+#         st.write("Uploaded Data:")
+#         st.dataframe(user_df)
 
-        # Basic Summary
-        st.subheader("Data Summary")
-        st.write(user_df.describe())
+#         # Basic Summary
+#         st.subheader("Data Summary")
+#         st.write(user_df.describe())
 
