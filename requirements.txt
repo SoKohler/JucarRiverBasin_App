@@ -5,4 +5,4 @@ streamlit-echarts
 numpy
 pysd
 openpyxl
-from streamlit_echarts import st_echarts
+
