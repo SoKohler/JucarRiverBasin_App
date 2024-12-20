@@ -19,7 +19,7 @@ st.set_page_config(page_title="Júcar River Basin Water management visualization
 
 ### Dynamic navigation menu 
 menu = st.sidebar.radio( "Menu",
-    ["Home", "Alarcon’s reservoir", "Scenario Analysis", "Comparisons", "Data Upload"])
+    ["Home", "Alarcon’s reservoir"])
 
 
 # App title
