@@ -17,10 +17,7 @@ os.chdir(r'C:\Users\sophi\myCloud\Sophia\Thesis\Model\Jucar_model\Adrià')
 #import Python System Dynamics library to run Vensim
 import pysd
 #for interface
-import dash
-from dash import Dash, dcc, html, Input, Output, State, dash_table
-import io
-import base64
+
 import openpyxl
 from openpyxl import load_workbook
 import pandas as pd

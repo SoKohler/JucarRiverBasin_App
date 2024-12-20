@@ -11,20 +11,6 @@ Created on Thu Dec 19 18:06:32 2024
 
 #import Python System Dynamics library to run Vensim
 import pysd
-#for interface
-import dash
-from dash import Dash, dcc, html, Input, Output, State, dash_table
-import io
-import base64
-import openpyxl
-from openpyxl import load_workbook
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import math
-
-
-
 
 import streamlit as st
 import pandas as pd
