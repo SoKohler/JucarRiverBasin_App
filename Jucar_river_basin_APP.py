@@ -118,21 +118,20 @@ elif menu == "Alarcon’s reservoir":
     st.sidebar.header("Adjust Environmental Flow (QecolAlar)")
     initial_env_flow = 5.184
     qecolAlar_value = st.sidebar.slider("Select Environmental Flow (m³/s)", 0.000, 10.000, initial_env_flow, 0.010) # min, max, default, step
-    
+
     # Button to update and run simulation
     if st.sidebar.button("Run Simulation"):
         # ----------------- UPDATE EXCEL FILE ----------------- #
         # Load the Excel file
         data_Demandas = pd.read_excel(r"C:\Users\sophi\myCloud\Sophia\Thesis\Model\Jucar_model\Adrià\data.xlsx", skiprows=1, sheet_name="Demandas")
         # Update the "QecolAlar" value
-        qecolAlar_value = 2
         data_Demandas["QecolAlar"] = qecolAlar_value
-
+        data_Demandas["QecolAlar"] = 5.184
         # Save the updated Excel file
         data_Demandas.to_excel(r"C:\Users\sophi\myCloud\Sophia\Thesis\Model\Jucar_model\Adrià\data.xlsx", sheet_name="Demandas", index=False)    
         # ----------------- RERUN VENSIM MODEL ----------------- #
         # Pass the updated QecolAlar value as a parameter
-        vensim_model = pysd.read_vensim('WEFE Jucar (Simple).mdl') 
+        vensim_model = pysd.read_vensim('WEFE Jucar (Simple).mdl')    
         variables_model = vensim_model.run(params={'INITIAL TIME': 1,'FINAL TIME': 120,'TIME STEP': 1})
     
         # ----------------- DISPLAY RESULTS ----------------- #
