@@ -59,7 +59,7 @@ st.set_page_config(page_title="Júcar River Basin Water management visualization
 
 ### Dynamic navigation menu 
 menu = st.sidebar.radio( "Menu",
-    ["Home", "Alarcon’s reservoir","vary"])
+    ["Home", "Alarcon’s reservoir"])
 # App title
 st.title("Júcar River Basin - Water management visualization tool")
 ### 0. Home page (explain the content of the app and the model)
@@ -125,7 +125,7 @@ elif menu == "Alarcon’s reservoir":
         # Load the Excel file
         data_Demandas = pd.read_excel(r"C:\Users\sophi\myCloud\Sophia\Thesis\Model\Jucar_model\Adrià\data.xlsx", skiprows=1, sheet_name="Demandas")
         # Update the "QecolAlar" value
-        data_Demandas.loc[data_Demandas['Parameter'] == "QecolAlar", 'Value'] = qecolAlar_value
+        data_Demandas["QecolAlar"] = qecolAlar_value
     
         # Save the updated Excel file
         data_Demandas.to_excel(r"C:\Users\sophi\myCloud\Sophia\Thesis\Model\Jucar_model\Adrià\data.xlsx", sheet_name="Demandas", index=False)    
@@ -168,6 +168,6 @@ elif menu == "Alarcon’s reservoir":
         # col1.metric("Total Flow", "350 m³/s", "+10%")
         # col2.metric("Deficit Reduction", "12%", "-5%")
         # col3.metric("Population Growth", "2.5%", "Stable")
-    
+    flmvfmv
     
     
