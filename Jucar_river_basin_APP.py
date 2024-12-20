@@ -127,7 +127,7 @@ elif menu == "Alarcon’s reservoir":
         # Update the "QecolAlar" value
         data_Demandas["QecolAlar"] = qecolAlar_value
         # Save the updated Excel file
-        data_Demandas.to_excel(r"C:\Users\sophi\myCloud\Sophia\Thesis\Model\Jucar_model\Adrià\data.xlsx", skiprows=1, sheet_name="Demandas", index=False)    
+        data_Demandas.to_excel(r"C:\Users\sophi\myCloud\Sophia\Thesis\Model\Jucar_model\Adrià\data.xlsx", sheet_name="Demandas", index=False)    
         # ----------------- RERUN VENSIM MODEL ----------------- #
         # Pass the updated QecolAlar value as a parameter
         variables_model = vensim_model.run(params={'INITIAL TIME': 1,'FINAL TIME': 120,'TIME STEP': 1})
@@ -138,15 +138,21 @@ elif menu == "Alarcon’s reservoir":
         # Display simulation data
         st.write("### Updated Simulation Data Table") 
         # Plot the results
-        st.write("### Visualization of Simulation Outputs")
+        st.write("### Outflow")
         fig, ax = plt.subplots()
-        ax.plot(variables_model['DéfQecolAlar'], label="Deficit")
         ax.plot(variables_model['Sal Jucar'], label="Outflow")
-        ax.set_xlabel("Time (days)")
-        ax.set_ylabel("Values")
+        ax.set_xlabel("Months")
+        ax.set_ylabel("hm3")
         ax.legend()
         st.pyplot(fig)
-    
+        
+        st.write("### Deficit")
+        fig, ax = plt.subplots()
+        ax.plot(variables_model['DéfQecolAlar'], label="Deficit")
+        ax.set_xlabel("Months")
+        ax.set_ylabel("hm3")
+        ax.legend()
+        st.pyplot(fig)
     
     
         # # Line Chart
