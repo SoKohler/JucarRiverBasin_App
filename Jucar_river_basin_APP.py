@@ -20,7 +20,7 @@ from openpyxl import load_workbook
 
 ### 1.Read data
 #transform all the formulas into static number 
-workbook = load_workbook('data_formulas.xlsx', data_only=True) 
+workbook = load_workbook('data.xlsx', data_only=True) 
 sheet = workbook.active #it will read all the sheets 
 #overwrite formulas with values
 for row in sheet.iter_rows():
