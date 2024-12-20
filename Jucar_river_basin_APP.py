@@ -27,23 +27,34 @@ st.title("Júcar River Basin - Water management visualization tool")
 ### 0. Home page (explain the content of the app and the model)
 if menu == "Home":
     st.header("0. Home page")
-    st.write(""" Welcome to the **Júcar River Basin System Dynamics Model**.  
-    This tool provides an interactive platform to analyze and simulate the behavior of the Júcar River system under various conditions, including drought scenarios and reservoir operation strategies.""")
-    st.header("Key features of the tool")
-    st.write("""
-    - **Visualize Water Resource Dynamics**: Explore flows between reservoirs, aquifers, and demands.
-    - **Interactive Variables**: Adjust reservoir operating rules, environmental flows, and agricultural water reductions.
-    - **Drought Management Simulation**: Test drought-triggered measures and evaluate their impacts on storage, supply, and economic outcomes.
-    - **Performance Indicators**: Monitor system performance with metrics like deficits, ecological flow compliance, and reservoir states.
-    """)
-    # Instructions
-    st.header("How to use this tool")
-    st.write("""
-    1. **Navigate** through the app using the menu on the left.
-    2. **Explore Key Variables**: Use sliders and inputs to adjust flows, demands, and policies.
-    3. **Simulate Scenarios**: Run simulations and observe results in dynamic charts and tables.
-    4. **Compare Impacts**: Analyze the effects of management decisions on water availability and system resilience.
-    """)
+    # Create Tabs in Home Section
+    tab1, tab2, tab3 = st.tabs(["Overview", "Key Features", "Instructions"])
+    
+    with tab1:
+        st.subheader("Overview")
+        st.write("""
+        The Júcar River Basin System Dynamics Model is designed to simulate water flows, reservoir levels, and drought conditions. 
+        It helps analyze the effects of water management policies on the environment and economy.
+        """)
+    
+    with tab2:
+        st.subheader("Key Features")
+        st.write("""
+        - **Visualize Water Resource Dynamics**: Explore flows between reservoirs, aquifers, and demands.
+        - **Interactive Variables**: Adjust reservoir operating rules and test drought measures.
+        - **Performance Indicators**: Monitor compliance with ecological flows and economic impacts.
+        """)
+    
+    with tab3:
+        st.subheader("Instructions")
+        st.write("""
+        1. **Navigate** through the app using the menu on the left.
+        2. **Explore Key Variables**: Use sliders and inputs to adjust flows, demands, and policies.
+        3. **Simulate Scenarios**: Observe results in charts and tables.
+        """)
+        
+    
+
 
 
 
@@ -140,5 +151,3 @@ elif menu == "Data Upload":
         st.subheader("Data Summary")
         st.write(user_df.describe())
 
-
-#treitoiejtjeotektoet
