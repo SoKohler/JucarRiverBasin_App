@@ -16,12 +16,9 @@ from streamlit_echarts import st_echarts
 # Page configuration
 st.set_page_config(page_title="Júcar River Basin Water management visualization tool", layout="centered")
 
-
 ### Dynamic navigation menu 
 menu = st.sidebar.radio( "Menu",
-    ["Home", "Alarcon’s reservoir"])
-
-
+    ["Home", "Alarcon’s reservoir","vary"])
 # App title
 st.title("Júcar River Basin - Water management visualization tool")
 ### 0. Home page (explain the content of the app and the model)
@@ -67,11 +64,6 @@ if menu == "Home":
         st.header("Vensim model - View 6 - CROPS" )
         st.image("Crops.PNG", caption="The Júcar River, Spain", use_column_width=True)    
 
-
-
-
-
-
 ### 1. Alarcon’s reservoir
 elif menu == "Alarcon’s reservoir":
     st.header("1. Alarcon’s reservoir")
@@ -98,68 +90,25 @@ elif menu == "Alarcon’s reservoir":
     col2.metric("Deficit Reduction", "12%", "-5%")
     col3.metric("Population Growth", "2.5%", "Stable")
 
-# # --- Scenario Analysis Page ---
-# elif menu == "Scenario Analysis":
-#     st.header("📈 Scenario Analysis")
-#     st.write("Adjust the parameters below to analyze different scenarios.")
+# --- Scenario Analysis Page ---
+elif menu == "Scenario Analysis":
+    st.header("📈 Scenario Analysis")
+    st.write("Adjust the parameters below to analyze different scenarios.")
 
-#     # Input Controls
-#     scenario_value = st.slider("Select Environmental Flow (m³/s)", 50, 200, 100)
-#     demand_reduction = st.slider("Agricultural Demand Reduction (%)", 10, 50, 30)
+    # Input Controls
+    scenario_value = st.slider("Select Environmental Flow (m³/s)", 50, 200, 100)
+    demand_reduction = st.slider("Agricultural Demand Reduction (%)", 10, 50, 30)
 
-#     # Visualization
-#     x_scenario = list(range(2020, 2031))
-#     y_scenario = [scenario_value - (demand_reduction / 100) * x for x in range(0, 11)]
+    # Visualization
+    x_scenario = list(range(2020, 2031))
+    y_scenario = [scenario_value - (demand_reduction / 100) * x for x in range(0, 11)]
 
-#     options = {
-#         "title": {"text": "Scenario Analysis Results"},
-#         "xAxis": {"type": "category", "data": x_scenario},
-#         "yAxis": {"type": "value"},
-#         "series": [{"data": y_scenario, "type": "line", "name": "Flow"}],
-#     }
-#     st_echarts(options=options, height="400px")
+    options = {
+        "title": {"text": "Scenario Analysis Results"},
+        "xAxis": {"type": "category", "data": x_scenario},
+        "yAxis": {"type": "value"},
+        "series": [{"data": y_scenario, "type": "line", "name": "Flow"}],
+    }
+    st_echarts(options=options, height="400px")
 
-# # --- Comparisons Page ---
-# elif menu == "Comparisons":
-#     st.header("📊 Chart Comparisons")
-#     st.write("Compare multiple charts and datasets side by side.")
-
-#     col1, col2 = st.columns(2)
-
-#     # Bar Chart
-#     with col1:
-#         st.subheader("Bar Chart Example")
-#         data = {"Category": ["A", "B", "C"], "Values": [10, 20, 30]}
-#         df = pd.DataFrame(data)
-#         st.bar_chart(df.set_index("Category"))
-
-#     # Pie Chart
-#     with col2:
-#         st.subheader("Pie Chart Example")
-#         pie_options = {
-#             "title": {"text": "Pie Chart Example"},
-#             "series": [
-#                 {"type": "pie", "radius": "50%", "data": [
-#                     {"value": 10, "name": "A"},
-#                     {"value": 20, "name": "B"},
-#                     {"value": 30, "name": "C"},
-#                 ]}
-#             ],
-#         }
-#         st_echarts(options=pie_options, height="400px")
-
-# # --- Data Upload Page ---
-# elif menu == "Data Upload":
-#     st.header("📋 Data Upload")
-#     st.write("Upload a dataset for analysis.")
-
-#     uploaded_file = st.file_uploader("Choose a CSV file", type=["csv"])
-#     if uploaded_file is not None:
-#         user_df = pd.read_csv(uploaded_file)
-#         st.write("Uploaded Data:")
-#         st.dataframe(user_df)
-
-#         # Basic Summary
-#         st.subheader("Data Summary")
-#         st.write(user_df.describe())
 
