@@ -8,7 +8,8 @@ Created on Thu Dec 19 18:06:32 2024
 #streamlit run Jucar_river_basin_APP.py
 #git save
 
-
+import os
+os.chdir(r'C:\Users\sophi\myCloud\Sophia\Thesis\Model\Jucar_model\Adrià')
 #import Python System Dynamics library to run Vensim
 import pysd
 import streamlit as st
@@ -42,20 +43,6 @@ for sheet_name in sheet_names:
 vensim_model = pysd.read_vensim('WEFE Jucar (Simple).mdl')    
 variables_model = vensim_model.run(params={'INITIAL TIME': 1,'FINAL TIME': 120,'TIME STEP': 1})
 ### 2.Test change QecolAlar (environmental flow downstream of Alarcon’s reservoir) = constant value
-
-QecolAlar = data_Demandas["QecolAlar"]
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -122,47 +109,66 @@ if menu == "Home":
 ### 1. Alarcon’s reservoir
 elif menu == "Alarcon’s reservoir":
     st.header("1. Alarcon’s reservoir")
-    st.write("xjgojdsg")
-
-    # Input Controls
-    initial_env_flow = 5.8
-    x_data = st.slider("Select Environmental Flow (m³/s)", 0.0, 10.0, initial_env_flow, 0.1) # min, max, default, step
-    y_data = [(x_data / 100)]
-
-    # Line Chart
-    st.subheader("Line Chart Example")
-    fig, ax = plt.subplots()
-    ax.plot(x_data, y_data, label="y = x²", color="blue")
-    ax.set_title("Line Chart Example")
-    ax.set_xlabel("X Axis")
-    ax.set_ylabel("Y Axis")
-    ax.legend()
-    st.pyplot(fig)
-
-    # Display Metrics
-    st.subheader("Key Metrics")
-    col1, col2, col3 = st.columns(3)
-    col1.metric("Total Flow", "350 m³/s", "+10%")
-    col2.metric("Deficit Reduction", "12%", "-5%")
-    col3.metric("Population Growth", "2.5%", "Stable")
-
-# --- Scenario Analysis Page ---
-elif menu == "Scenario Analysis":
-    st.header("📈 Scenario Analysis")
-    st.write("Adjust the parameters below to analyze different scenarios.")
-
-
-
-    # Visualization
-    x_scenario = list(range(2020, 2031))
-    y_scenario = [scenario_value - (demand_reduction / 100) * x for x in range(0, 11)]
-
-    options = {
-        "title": {"text": "Scenario Analysis Results"},
-        "xAxis": {"type": "category", "data": x_scenario},
-        "yAxis": {"type": "value"},
-        "series": [{"data": y_scenario, "type": "line", "name": "Flow"}],
-    }
-    st_echarts(options=options, height="400px")
-
-
+    st.write("initial_env_flow = 5.184")
+  
+    
+    
+    
+    # ----------------- USER INPUT ----------------- #
+    # Sidebar input
+    st.sidebar.header("Adjust Environmental Flow (QecolAlar)")
+    initial_env_flow = 5.184
+    qecolAlar_value = st.sidebar.slider("Select Environmental Flow (m³/s)", 0.000, 10.000, initial_env_flow, 0.010) # min, max, default, step
+    
+    # Button to update and run simulation
+    if st.sidebar.button("Run Simulation"):
+        # ----------------- UPDATE EXCEL FILE ----------------- #
+        # Load the Excel file
+        data_Demandas = pd.read_excel("data.xlsx", skiprows=1, sheet_name="Demandas")
+        # Update the "QecolAlar" value
+        data_Demandas.loc[data_Demandas['Parameter'] == "QecolAlar", 'Value'] = qecolAlar_value
+    
+        # Save the updated Excel file
+        data_Demandas.to_excel("data.xlsx", sheet_name="Demandas", index=False)    
+        # ----------------- RERUN VENSIM MODEL ----------------- #
+        # Pass the updated QecolAlar value as a parameter
+        variables_model = vensim_model.run(params={'INITIAL TIME': 1,'FINAL TIME': 120,'TIME STEP': 1})
+    
+        # ----------------- DISPLAY RESULTS ----------------- #
+        st.subheader("Simulation Results")
+    
+        # Display simulation data
+        st.write("### Updated Simulation Data Table")
+        st.dataframe(variables_model)
+    
+        # Plot the results
+        st.write("### Visualization of Simulation Outputs")
+        fig, ax = plt.subplots()
+        ax.plot(variables_model['Time'], variables_model['DéfQecolAlar'], label="Deficit")
+        ax.plot(variables_model['Time'], variables_model['Sal Jucar'], label="Outflow")
+        ax.set_xlabel("Time (days)")
+        ax.set_ylabel("Values")
+        ax.legend()
+        st.pyplot(fig)
+    
+    
+    
+        # # Line Chart
+        # st.subheader("Line Chart Example")
+        # fig, ax = plt.subplots()
+        # ax.plot(x_data, y_data, label="y = x²", color="blue")
+        # ax.set_title("Line Chart Example")
+        # ax.set_xlabel("X Axis")
+        # ax.set_ylabel("Y Axis")
+        # ax.legend()
+        # st.pyplot(fig)
+    
+        # # Display Metrics
+        # st.subheader("Key Metrics")
+        # col1, col2, col3 = st.columns(3)
+        # col1.metric("Total Flow", "350 m³/s", "+10%")
+        # col2.metric("Deficit Reduction", "12%", "-5%")
+        # col3.metric("Population Growth", "2.5%", "Stable")
+    
+    
+    
