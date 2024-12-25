@@ -38,7 +38,7 @@ workbook.save('data.xlsx')
 
 
 # Import the data with all sheets (type = dictionary)
-data_all = pd.read_excel("data.xlsx", sheet_name=None, engine="openpyxl")# List of sheet names
+data_all = pd.read_excel("data_initial.xlsx", sheet_name=None, engine="openpyxl")# List of sheet names
 sheet_names = list(data_all.keys())
 # Create the variable for each of the sheets (globals() allows you to modify the global namespace))
 for sheet_name in sheet_names:
@@ -56,21 +56,4 @@ DéfQecolAlar = variables_model["DéfQecolAlar"]
 
 QecolAlar = data_Demandas["QecolAlar"]
 
-
-    
-        # # Line Chart
-        # st.subheader("Line Chart Example")
-        # fig, ax = plt.subplots()
-        # ax.plot(x_data, y_data, label="y = x²", color="blue")
-        # ax.set_title("Line Chart Example")
-        # ax.set_xlabel("X Axis")
-        # ax.set_ylabel("Y Axis")
-        # ax.legend()
-        # st.pyplot(fig)
-    
-        # # Display Metrics
-        # st.subheader("Key Metrics")
-        # col1, col2, col3 = st.columns(3)
-        # col1.metric("Total Flow", "350 m³/s", "+10%")
-        # col2.metric("Deficit Reduction", "12%", "-5%")
 

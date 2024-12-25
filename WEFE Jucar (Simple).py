@@ -7,7 +7,7 @@ from pathlib import Path
 import numpy as np
 
 from pysd.py_backend.functions import if_then_else
-from pysd.py_backend.statefuls import Integ, DelayFixed
+from pysd.py_backend.statefuls import DelayFixed, Integ
 from pysd.py_backend.external import ExtData
 from pysd import Component
 
@@ -113,7 +113,7 @@ def defqecolalar():
     name="SueltasAlarcón",
     comp_type="Auxiliary",
     comp_subtype="Normal",
-    depends_on={"qecolalar": 1, "demanda_total_tous": 1, "alarcon": 1},
+    depends_on={"qecolalar": 1, "alarcon": 1, "demanda_total_tous": 1},
 )
 def sueltasalarcon():
     return np.maximum(qecolalar(), alarcon() * demanda_total_tous() / 100)
@@ -769,7 +769,7 @@ def alarc_cont_tous():
     name="Volumen esperado Contreras",
     comp_type="Auxiliary",
     comp_subtype="Normal",
-    depends_on={"contreras_1": 1, "time_step": 1, "ent_con": 1, "sueltascontreras": 1},
+    depends_on={"contreras_1": 1, "ent_con": 1, "time_step": 1, "sueltascontreras": 1},
 )
 def volumen_esperado_contreras():
     return contreras_1() + ent_con() * time_step() - sueltascontreras()
@@ -1228,7 +1228,7 @@ def sal_contreras():
     other_deps={
         "_integ_tous_1": {
             "initial": {},
-            "step": {"ent_tous": 1, "sal_tous": 1, "perdidas_t": 1},
+            "step": {"ent_tous": 1, "perdidas_t": 1, "sal_tous": 1},
         }
     },
 )
@@ -1319,12 +1319,12 @@ _ext_data_convenio_alarcon = ExtData(
     depends_on={
         "alarcon_1": 2,
         "convenio_alarcon": 1,
-        "albacete": 2,
         "sustitumancha": 1,
+        "albacete": 2,
+        "minimo_alarcon": 1,
+        "time_step": 1,
         "ent_alar": 1,
         "perdidas_a": 1,
-        "time_step": 1,
-        "minimo_alarcon": 1,
     },
 )
 def sal_ats():
@@ -1359,10 +1359,10 @@ def aliviaderosalarcon():
     comp_subtype="Normal",
     depends_on={
         "alarcon_1": 1,
-        "ent_alar": 1,
-        "sueltasalarcon": 1,
         "time_step": 1,
+        "sueltasalarcon": 1,
         "sal_ats": 1,
+        "ent_alar": 1,
     },
 )
 def volumen_esperado_alarcon():
@@ -1904,10 +1904,10 @@ def ent_con():
     comp_subtype="Normal",
     depends_on={
         "sustitumancha": 1,
+        "defalbacete": 1,
+        "senal_de_estado": 1,
         "sal_ats": 1,
         "albacete": 1,
-        "senal_de_estado": 1,
-        "defalbacete": 1,
     },
 )
 def defmancha():
@@ -2098,7 +2098,7 @@ def sequia_reutilizacion():
     name='"Total Demanda Alba-Mancha"',
     comp_type="Auxiliary",
     comp_subtype="Normal",
-    depends_on={"sustitumancha": 1, "albacete": 1, "senal_de_estado": 1},
+    depends_on={"sustitumancha": 1, "senal_de_estado": 1, "albacete": 1},
 )
 def total_demanda_albamancha():
     return sustitumancha() + albacete() * if_then_else(
@@ -2607,8 +2607,8 @@ def variationv():
         "total_demanda_urbana": 1,
         "sumsubt": 2,
         "cjt": 1,
-        "sumin_sagunto": 1,
         "suminvalencia": 1,
+        "sumin_sagunto": 1,
     },
 )
 def acuifero_auxiliar():
