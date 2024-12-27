@@ -27,6 +27,7 @@ workbook = openpyxl.load_workbook("data_initial.xlsx")
 workbook.save("data.xlsx")
 vensim_model = pysd.load('WEFE Jucar (Simple).py')
 initial_qecolAlar_value = 5.18
+qecolAlar_value = initial_qecolAlar_value
 years_sim = 10
 months = np.arange(1, (12*years_sim)+1)
 variables_model_initial = vensim_model.run(params={'INITIAL TIME': 1, 'FINAL TIME': 12*years_sim, 'TIME STEP': 1})
@@ -41,7 +42,7 @@ app.title = "Júcar River Basin Water Management"
 # Define reusable page components
 def create_home_page():
     return html.Div([
-        html.H1("Júcar River Basin Management Tool", className="text-center my-4"),
+        html.H1("Júcar River Basin Management Tool", className="text-center mt-0"),
         html.P("Welcome to the Júcar River Basin System Dynamics Model. This tool provides an interactive platform "
                "to analyze and simulate the behavior of the Júcar River Basin under various scenarios."),
         html.H2("Content", className="mt-4"),
@@ -61,7 +62,7 @@ def create_home_page():
 
 def create_model_presentation():
     return html.Div([
-        html.H1("Júcar River Basin Management Tool", className="text-center my-4"),
+        html.H1("Júcar River Basin Management Tool", className="text-center mt-0"),
         dbc.Tabs([
             dbc.Tab(label="View 1: SYSTEM NETWORK", children=[
                 html.P("Overview of the model"),
@@ -91,15 +92,35 @@ def create_model_presentation():
     ])
 
 def create_alarcon_page():
-    slider = html.Div([
-        html.P("QEcolAlar: This is the environmental flow downstream of Alarcon’s reservoir.", className="text-center mt-4"),
-        dcc.Slider(id="qecolAlar-slider", min=0.0,max=10.0,step=0.1,value=initial_qecolAlar_value,marks={i: str(i) for i in range(0, 11)}),
-        dbc.Button("Run Simulation", id="run-simulation", color="primary", className="mt-3 w-100")
-    ], className="p-3")
+    # choose between slider and dropdown
+    select_input_type = html.Div([
+         html.P("Select Input Type:", className="text-center ml-2"),
+         dbc.RadioItems(id="qecolAlar-selector", options=[{"label": "Constant (Slider)", "value": "slider"},{"label": "Vary Monthly (Dropdown)", "value": "dropdown"},],inline=True,value="slider",className="mb-3")
+         ])
+    # Slider for constant input
+    qecolAlar_slider = html.Div([
+        html.P("QEcolAlar: This is the environmental flow downstream of Alarcon’s reservoir.", className="text-center ml-2"),
+        dcc.Slider(min=0.0, max=10.0,step=0.1,value=initial_qecolAlar_value,marks={i: str(i) for i in range(0, 11)})],
+        id="qecolAlar-slider",
+        style={"display": "none", "width": "5%", "margin": "0 auto"} # Initially hidden
+        ) 
+    
+    qecolAlar_dropdown = html.Div([
+        html.P("QEcolAlar: This is the environmental flow downstream of Alarcon’s reservoir.", className="text-start ml-2"),
+        dbc.Input(type="number", min=0.0, max=10.0,step=0.1,value=initial_qecolAlar_value)],
+        id="qecolAlar-dropdown",
+        style={"display": "none","width": "5%", "margin": "0 auto"} # Initially hidden
+        )
 
+    run_simulation = html.Div([
+        dbc.Button("Run Simulation",  color="primary", className="text-start ml-2")],
+        id="run-simulation",
+        style={"display": "none", "width": "5%", "margin": "0 auto"} # Initially hidden
+        ) 
+    
     result_section = dbc.Spinner(
         html.Div([
-            html.P("DéfQEcolAlar: is the deficit regarding the environmental flow. ", className="text-center my-4"),
+            html.P("DéfQEcolAlar: is the deficit regarding the environmental flow. ", className="text-start ml-2"),
             dcc.Graph(
                 id="outflow-graph",
                 figure={
@@ -117,20 +138,14 @@ def create_alarcon_page():
         ])
     )
 
-    # collapse = html.Div([
-    #     dbc.Button("Open collapse", id="collapse-button", className="mb-3", color="primary", n_clicks=0),
-    #     dbc.Collapse(
-    #         dbc.Card(dbc.CardBody("This content is hidden in the collapse.")),
-    #         id="collapse",
-    #         is_open=False
-    #     ),
-    # ])
-
     return html.Div([
-        html.H1("Alarcón’s Reservoir", className="text-center my-4"),
+        html.H1("Alarcón’s Reservoir", className="text-center mt-0"),
         # collapse,
         html.P("Use the slider and run the simulation."),
-        slider,
+        select_input_type,
+        qecolAlar_slider,
+        qecolAlar_dropdown,
+        run_simulation,
         result_section
     ])
 
@@ -144,15 +159,12 @@ app.layout = dbc.Container(fluid=True, children=[
                     dbc.ListGroupItem("Home", href="/", active="exact", className="text-dark"),
                     dbc.ListGroupItem("Model presentation", href="/model", active="exact", className="text-dark"),
                     dbc.ListGroupItem("Alarcón’s Reservoir", href="/alarcon", active="exact", className="text-dark"),
-                ]),
-            ], className="shadow-sm", style={"height": "100vh"}), width=2
-        ),
+                ]),],
+                className="shadow-sm", style={"height": "100vh"}), width=1.5),
         dbc.Col(
-            [dcc.Location(id="url"), html.Div(id="page-content", style={"padding": "20px"})],
-            width=10
-        )
+            [dcc.Location(id="url"), html.Div(id="page-content", style={"padding": "20px"})],   width=10)
+        ])
     ])
-])
 
 # Callbacks
 @app.callback(
@@ -168,27 +180,35 @@ def update_page(pathname):
         return create_alarcon_page()
     return html.Div("404: Page Not Found")
 
-# Collapse
-# @app.callback(
-#     Output("collapse", "is_open"),
-#     Input("collapse-button", "n_clicks"),
-#     State("collapse", "is_open")
-# )
-# def toggle_collapse(n_clicks, is_open):
-#     if n_clicks:
-#         return not is_open
-#     return is_open
+#selection of slider_value
+@app.callback(
+    [Output("qecolAlar-slider", "style"),
+     Output("qecolAlar-dropdown", "style"),
+     Output("run-simulation", "style")],
+    Input("qecolAlar-selector", "value")
+)
+def toggle_input(input_type):
+    if input_type == "slider":
+        return {"display": "block"}, {"display": "none"}, {"display": "block"}
+    elif input_type == "dropdown":
+        return {"display": "none"}, {"display": "block"}, {"display": "block"}
+    return {"display": "none"}, {"display": "none"}, {"display": "none"}
 
 @app.callback(
     [Output("outflow-graph", "figure"),
      Output("deficit-graph", "figure")],
+    [State("qecolAlar-selector", "value"),  # Use slider value as state
+    State("qecolAlar-slider", "value"),  # Use slider value as state
+    State("qecolAlar-dropdown", "value")],  # Use slider value as state
     [Input("run-simulation", "n_clicks")],  # Trigger only on button click
-    [State("qecolAlar-slider", "value")],  # Use slider value as state
     prevent_initial_call=True
 )
-def update_Alarcon_graphs(qecolAlar_value, n_clicks):
+def update_Alarcon_graphs(input_type, slider_value,dropdown_value, n_clicks):
     if n_clicks is None:
-        raise dash.exceptions.PreventUpdate  # Prevent callback if no clicks   
+        raise dash.exceptions.PreventUpdate  # Prevent callback if no clicks
+    """
+    # Determine input value
+    qecolAlar_value = slider_value if input_type == "slider" else dropdown_value
     workbook = openpyxl.load_workbook("data.xlsx")
     sheet = workbook["Demandas"]
     column_name = "QecolAlar"
@@ -225,12 +245,13 @@ def update_Alarcon_graphs(qecolAlar_value, n_clicks):
         "layout": go.Layout(title="Outflow Over Time", xaxis={"title": "Months"}, yaxis={"title": "hm³"})
     }
     deficit_figure = {
-        "data": [go.Scatter(x=months, y=updated_deficit, mode="lines", name=f"Uptated Deficit(QecoAlar ={qecolAlar_value})", line=dict(dash="dot")),
-                 go.Scatter(x=months, y=initial_deficit, mode="lines", name=f"initial Deficit (QecoAlar ={initial_qecolAlar_value})")],
+        "data": [go.Scatter(x=months, y=initial_deficit, mode="lines", name=f"initial Deficit (QecoAlar ={initial_qecolAlar_value})",line=dict(dash="dot")),
+                go.Scatter(x=months, y=updated_deficit, mode="lines", name=f"Uptated Deficit(QecoAlar ={qecolAlar_value})")],
+
         "layout": go.Layout(title="Deficit Over Time", xaxis={"title": "Months"}, yaxis={"title": "hm³"})
     }
 
-    return outflow_figure, deficit_figure
+    return outflow_figure, deficit_figure"""
 
 # Run the app
 if __name__ == "__main__":
