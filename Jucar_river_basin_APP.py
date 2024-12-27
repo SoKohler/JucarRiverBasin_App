@@ -1,9 +1,17 @@
+
 # -*- coding: utf-8 -*-
 """
-Júcar River Basin Management Tool
 Created on Wed Dec 18 10:49:58 2024
+
 @author: sophi
+
+source documentation : https://dash-bootstrap-components.opensource.faculty.ai/docs/components/accordion/
+http://127.0.0.1:8050
 """
+#cd C:\Users\sophi\myCloud\Sophia\Thesis\Model\Jucar_model\Adrià\App_Jucar
+#streamlit run Jucar_river_basin.py
+#git save
+
 # Import libraries and modules
 import pandas as pd
 import numpy as np
@@ -17,9 +25,10 @@ import plotly.graph_objs as go
 # Precompute initial graph data
 workbook = openpyxl.load_workbook("data_initial.xlsx")
 workbook.save("data.xlsx")
-vensim_model = pysd.read_vensim('WEFE Jucar (Simple).mdl')
+vensim_model = pysd.load('WEFE Jucar (Simple).py')
 initial_qecolAlar_value = 5.18
-years_sim = 1
+qecolAlar_value = initial_qecolAlar_value
+years_sim = 10
 months = np.arange(1, (12*years_sim)+1)
 variables_model_initial = vensim_model.run(params={'INITIAL TIME': 1, 'FINAL TIME': 12*years_sim, 'TIME STEP': 1})
 
@@ -83,16 +92,15 @@ def create_model_presentation():
     ])
 
 def create_alarcon_page():
-    #
-    control_section = html.Div([
-        html.H5("QEcolAlar: This is the environmental flow downstream of Alarcon’s reservoir.", className="text-center mt-4"),
-        dcc.Slider(id="qecolAlar-slider", min=0.0,max=10.0,step=0.01,value=initial_qecolAlar_value,marks={i: str(i) for i in range(11)}),
+    qecolAlar_slider = html.Div([
+        html.P("QEcolAlar: This is the environmental flow downstream of Alarcon’s reservoir.", className="text-center mt-4"),
+        dcc.Slider(id="qecolAlar-slider", min=0, max=10,step=1,value=4,marks={i: str(i) for i in range(0, 11)}),
         dbc.Button("Run Simulation", id="run-simulation", color="primary", className="mt-3 w-100")
     ], className="p-3")
 
     result_section = dbc.Spinner(
         html.Div([
-            html.H1("DéfQEcolAlar: is the deficit regarding the environmental flow. ", className="text-center my-4"),
+            html.P("DéfQEcolAlar: is the deficit regarding the environmental flow. ", className="text-center my-4"),
             dcc.Graph(
                 id="outflow-graph",
                 figure={
@@ -110,20 +118,20 @@ def create_alarcon_page():
         ])
     )
 
-    collapse = html.Div([
-        dbc.Button("Open collapse", id="collapse-button", className="mb-3", color="primary", n_clicks=0),
-        dbc.Collapse(
-            dbc.Card(dbc.CardBody("This content is hidden in the collapse.")),
-            id="collapse",
-            is_open=False
-        ),
-    ])
+    # collapse = html.Div([
+    #     dbc.Button("Open collapse", id="collapse-button", className="mb-3", color="primary", n_clicks=0),
+    #     dbc.Collapse(
+    #         dbc.Card(dbc.CardBody("This content is hidden in the collapse.")),
+    #         id="collapse",
+    #         is_open=False
+    #     ),
+    # ])
 
     return html.Div([
         html.H1("Alarcón’s Reservoir", className="text-center my-4"),
-        collapse,
+        # collapse,
         html.P("Use the slider and run the simulation."),
-        control_section,
+        qecolAlar_slider,
         result_section
     ])
 
@@ -161,27 +169,27 @@ def update_page(pathname):
         return create_alarcon_page()
     return html.Div("404: Page Not Found")
 
-@app.callback(
-    Output("collapse", "is_open"),
-    Input("collapse-button", "n_clicks"),
-    State("collapse", "is_open")
-)
-def toggle_collapse(n_clicks, is_open):
-    if n_clicks:
-        return not is_open
-    return is_open
+# Collapse
+# @app.callback(
+#     Output("collapse", "is_open"),
+#     Input("collapse-button", "n_clicks"),
+#     State("collapse", "is_open")
+# )
+# def toggle_collapse(n_clicks, is_open):
+#     if n_clicks:
+#         return not is_open
+#     return is_open
 
 @app.callback(
     [Output("outflow-graph", "figure"),
      Output("deficit-graph", "figure")],
-    [Input("run-simulation", "n_clicks")],  # Trigger only on button click
     [State("qecolAlar-slider", "value")],  # Use slider value as state
+    [Input("run-simulation", "n_clicks")],  # Trigger only on button click
     prevent_initial_call=True
 )
 def update_Alarcon_graphs(qecolAlar_value, n_clicks):
     if n_clicks is None:
-        raise dash.exceptions.PreventUpdate  # Prevent callback if no clicks
-        
+        raise dash.exceptions.PreventUpdate  # Prevent callback if no clicks  
     workbook = openpyxl.load_workbook("data.xlsx")
     sheet = workbook["Demandas"]
     column_name = "QecolAlar"
@@ -197,15 +205,14 @@ def update_Alarcon_graphs(qecolAlar_value, n_clicks):
     last_row = 2  
     for row in range(3, sheet.max_row+1): 
         if sheet.cell(row=row, column=column_index).value is not None:
-            last_row = row  
+           last_row = row  
     # change the values of column QecoAlar with the value wanted and save it into data.xlsx to keep data_initial intact
-    # Update values in the column
     for row in range(3, last_row + 1):
         sheet.cell(row=row, column=column_index).value = qecolAlar_value
     workbook.save("data.xlsx")
-    
+    print(qecolAlar_value)
     #rerun the model
-    vensim_model = pysd.read_vensim('WEFE Jucar (Simple).mdl')
+    vensim_model = pysd.load('WEFE Jucar (Simple).py')
     variables_model = vensim_model.run(params={'INITIAL TIME': 1, 'FINAL TIME': 12*years_sim, 'TIME STEP': 1})
     updated_outflow = variables_model['Sal Jucar']
     updated_deficit = variables_model['DéfQecolAlar']
