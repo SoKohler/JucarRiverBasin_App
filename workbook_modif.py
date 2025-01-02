@@ -26,14 +26,18 @@ import plotly.graph_objs as go
 workbook = openpyxl.load_workbook("data_initial.xlsx")
 workbook.save("data.xlsx")
 vensim_model = pysd.load('WEFE Jucar (Simple).py')
-initial_qecolAlar_value = 5.18
-qecolAlar_value = initial_qecolAlar_value
 years_sim = 10
 months = np.arange(1, (12*years_sim)+1)
 variables_model_initial = vensim_model.run(params={'INITIAL TIME': 1, 'FINAL TIME': 12*years_sim, 'TIME STEP': 1})
-
+#1.Alarcon initial values
+initial_qecolAlar_value = 5.18
+qecolAlar_value = initial_qecolAlar_value
 initial_outflow = variables_model_initial['Sal Jucar']
 initial_deficit = variables_model_initial['DéfQecolAlar']
+#1.Population growth initial value
+initial_variation_rate = 0.00018728
+variation_rate = initial_variation_rate
+initial_urban_demand = variables_model_initial['Total Demanda Urbana']
 
 # Initialize the Dash app
 app = Dash(__name__, external_stylesheets=[dbc.themes.FLATLY], suppress_callback_exceptions=True)
@@ -63,42 +67,45 @@ def create_home_page():
 def create_model_presentation():
     return html.Div([
         html.H1("Júcar River Basin Management Tool", className="text-center mt-0"),
-        dbc.Tabs([
-            dbc.Tab(label="View 1: SYSTEM NETWORK", children=[
-                html.P("Overview of the model"),
-                html.Img(src="/assets/View_1.PNG", style={"width": "80%", "margin": "auto", "display": "block"})
-            ]),
-            dbc.Tab(label="View 2", children=[
-                html.P("MANCHA ORIENTAL AQUIFER"),
-                html.Img(src="/assets/View_2.PNG", style={"width": "80%", "margin": "auto", "display": "block"})
-            ]),
-            dbc.Tab(label="View 3", children=[
-                html.P("WATER DEMAND, SUPPLY AND DEFICIT"),
-                html.Img(src="/assets/View_3.PNG", style={"width": "80%", "margin": "auto", "display": "block"})
-            ]),
-            dbc.Tab(label="View 4", children=[
-                html.P("RESERVOIRS OPERATING RULES"),
-                html.Img(src="/assets/View_4.PNG", style={"width": "80%", "margin": "auto", "display": "block"})
-            ]),
-            dbc.Tab(label="View 5", children=[
-                html.P("STATE INDEX"),
-                html.Img(src="/assets/View_5.PNG", style={"width": "80%", "margin": "auto", "display": "block"})
-            ]),
-            dbc.Tab(label="View Crops", children=[
-                html.P("CROPS"),
-                html.Img(src="/assets/Crops.PNG", style={"width": "80%", "margin": "auto", "display": "block"})
-            ]),
-        ])
+        dbc.Tabs(
+            [
+                dbc.Tab(label="View 1: SYSTEM NETWORK", children=[
+                    html.P("Overview of the model"),
+                    html.Img(src="/assets/View_1.PNG", style={"width": "100%", "margin": "auto", "display": "block"})
+                ]),
+                dbc.Tab(label="Aquifer", children=[
+                    html.P("View 2: MANCHA ORIENTAL AQUIFER"),
+                    html.Img(src="/assets/View_2.PNG", style={"width": "100%", "margin": "auto", "display": "block"})
+                ]),
+                dbc.Tab(label="Water demand, supply and deficit", children=[
+                    html.P("View 3: WATER DEMAND, SUPPLY AND DEFICIT"),
+                    html.Img(src="/assets/View_3.PNG", style={"width": "100%", "margin": "auto", "display": "block"})
+                ]),
+                dbc.Tab(label="Reservoirs operating rules", children=[
+                    html.P("View 4: RESERVOIRS OPERATING RULES"),
+                    html.Img(src="/assets/View_4.PNG", style={"width": "100%", "margin": "auto", "display": "block"})
+                ]),
+                dbc.Tab(label="State index", children=[
+                    html.P("View 5: STATE INDEX"),
+                    html.Img(src="/assets/View_5.PNG", style={"width": "100%", "margin": "auto", "display": "block"})
+                ]),
+                dbc.Tab(label="Crops", children=[
+                    html.P("View : CROPS"),
+                    html.Img(src="/assets/Crops.PNG", style={"width": "100%", "margin": "auto", "display": "block"})
+                ]),
+            ]
+        )
     ])
 
-def create_parameter_panel():
+
+
+def create_parameter_panel_Alarcon():
     return html.Div([
         html.H2("Parameter Settings", className="text-center mt-3"),
         html.P("QEcolAlar: This is the environmental flow downstream of Alarcon’s reservoir.", className="text-center ml-2"),
-        
-        # Radio Items for Selection
         html.Div([
-            html.P("Select Input Type:", style={"text-align": "center"}),
+            # choose between slider and dropdown
+            html.P("Select Input Type:"),
             dbc.RadioItems(
                 id="qecolAlar-selector",
                 options=[
@@ -106,83 +113,76 @@ def create_parameter_panel():
                     {"label": "Monthly dynamic values", "value": "option2"},
                 ],
                 inline=True,
-                value="option1",  # Default selection
-                className="mb-3",
+                value="option1",# Default selection
+                className="mb-3"
             ),
-        ], className="p-4 bg-light shadow rounded", style={"text-align": "center"}),
-
-        # Constant Input Box with Label
+        ], className="p-4 bg-light shadow rounded", style={ "margin-bottom": "20px"}),
+        # Option 1 : Dropdown for constant input 
         html.Div([
-            html.P("Set a constant Qeco", className="mb-1"),
-            dbc.Input(
-                type="number",
-                min=0.0,
-                max=10.0,
-                step=0.1,
-                value=initial_qecolAlar_value,
-                style={"width": "100px", "text-align": "center"}
-            )
-        ], id="qecolAlar-constant", style={
-            "display": "flex",
-            "flex-direction": "column",
-            "align-items": "center",
-            "margin-bottom": "20px",
-        }),
+            html.P("Set a constant Qeco:", className="text-center mt-1"),
+            dbc.Input(id="qecolAlar-constant-input",type="number", min=0.0, max=10.0, step=0.1, value=initial_qecolAlar_value,
+                      style={"width": "100px", "text-align": "center", "margin": "0 auto"})
+        ], id="qecolAlar-constant", style={"text-align": "center", "margin-bottom": "20px"}),
 
-        # Monthly Dynamic Input
         # Option 2 : Dynamic dropdown for 12 months for dynamic input
         html.Div([
             html.P("Set a Qeco for each month:", className="text-center mt-1"),
             html.Div([
                 dbc.Row([
-                    dbc.Col([html.Label("January"), dbc.Input(type="number", id="jan-value", value=5.0, step=0.1)], width=6),
-                    dbc.Col([html.Label("February"), dbc.Input(type="number", id="feb-value", value=5.0, step=0.1)], width=6),
+                    dbc.Col([html.Label("January"), dbc.Input(type="number", id="jan-value", min=0.0, max=10.0, step=0.1, value=initial_qecolAlar_value)], width=6),
+                    dbc.Col([html.Label("February"), dbc.Input(type="number", id="feb-value", min=0.0, max=10.0, step=0.1, value=initial_qecolAlar_value)], width=6),
                 ], className="mb-2"),
                 dbc.Row([
-                    dbc.Col([html.Label("March"), dbc.Input(type="number", id="mar-value", value=5.0, step=0.1)], width=6),
-                    dbc.Col([html.Label("April"), dbc.Input(type="number", id="apr-value", value=5.0, step=0.1)], width=6),
+                    dbc.Col([html.Label("March"), dbc.Input(type="number", id="mar-value", min=0.0, max=10.0, step=0.1, value=initial_qecolAlar_value)], width=6),
+                    dbc.Col([html.Label("April"), dbc.Input(type="number", id="apr-value", min=0.0, max=10.0, step=0.1, value=initial_qecolAlar_value)], width=6),
                 ], className="mb-2"),
                 dbc.Row([
-                    dbc.Col([html.Label("May"), dbc.Input(type="number", id="may-value", value=5.0, step=0.1)], width=6),
-                    dbc.Col([html.Label("June"), dbc.Input(type="number", id="jun-value", value=5.0, step=0.1)], width=6),
+                    dbc.Col([html.Label("May"), dbc.Input(type="number", id="may-value",min=0.0, max=10.0, step=0.1, value=initial_qecolAlar_value)], width=6),
+                    dbc.Col([html.Label("June"), dbc.Input(type="number", id="jun-value", min=0.0, max=10.0, step=0.1, value=initial_qecolAlar_value)], width=6),
                 ], className="mb-2"),
                 dbc.Row([
-                    dbc.Col([html.Label("July"), dbc.Input(type="number", id="jul-value", value=5.0, step=0.1)], width=6),
-                    dbc.Col([html.Label("August"), dbc.Input(type="number", id="aug-value", value=5.0, step=0.1)], width=6),
+                    dbc.Col([html.Label("July"), dbc.Input(type="number", id="jul-value", min=0.0, max=10.0, step=0.1, value=initial_qecolAlar_value)], width=6),
+                    dbc.Col([html.Label("August"), dbc.Input(type="number", id="aug-value", min=0.0, max=10.0, step=0.1, value=initial_qecolAlar_value)], width=6),
                 ], className="mb-2"),
                 dbc.Row([
-                    dbc.Col([html.Label("September"), dbc.Input(type="number", id="sep-value", value=5.0, step=0.1)], width=6),
-                    dbc.Col([html.Label("October"), dbc.Input(type="number", id="oct-value", value=5.0, step=0.1)], width=6),
+                    dbc.Col([html.Label("September"), dbc.Input(type="number", id="sep-value", min=0.0, max=10.0, step=0.1, value=initial_qecolAlar_value)], width=6),
+                    dbc.Col([html.Label("October"), dbc.Input(type="number", id="octo-value",min=0.0, max=10.0, step=0.1, value=initial_qecolAlar_value)], width=6),
                 ], className="mb-2"),
                 dbc.Row([
-                    dbc.Col([html.Label("November"), dbc.Input(type="number", id="nov-value", value=5.0, step=0.1)], width=6),
-                    dbc.Col([html.Label("December"), dbc.Input(type="number", id="dec-value", value=5.0, step=0.1)], width=6),
+                    dbc.Col([html.Label("November"), dbc.Input(type="number", id="nov-value", min=0.0, max=10.0, step=0.1, value=initial_qecolAlar_value)], width=6),
+                    dbc.Col([html.Label("December"), dbc.Input(type="number", id="dec-value", min=0.0, max=10.0, step=0.1, value=initial_qecolAlar_value)], width=6),
                 ])
             ])
         ], id="qecolAlar-dynamic", 
             style={"display": "none", "margin-bottom": "20px","margin-top": "20px"},
             className="text-center mt-0"),
-
-        # Run Simulation Button
+        #simulation button
         html.Div([
-            dbc.Button("Run Simulation", id="run-simulation", color="primary")
-        ], style={"display": "flex", "justify-content": "center", "margin-top": "20px"}),
-    ], style={
-        "maxWidth": "500px",
-        "margin": "0 auto",
-        "display": "flex",
-        "flex-direction": "column",
-        "align-items": "center",
-    }, className="p-4 bg-light shadow rounded")
-
-
-        
+           dbc.Button("Run Simulation", id="run-simulation", color="primary",className="text-center mt-0")
+       ],  style={"display": "flex", "justify-content": "center","align-items": "center", "margin-top": "20px",  "margin-bottom": "20px"})
+   #], style={"maxWidth": "500px", "margin": "0 auto","display": "flex","flex-direction": "column","align-items": "center"}, className="p-4 bg-light shadow rounded")
+    ], style={"maxWidth": "600px", "margin": "20px auto", "padding": "20px", "boxShadow": "0 4px 8px rgba(0,0,0,0.1)"})
+def create_parameter_panel_population():
+    return html.Div([
+        html.H2("Parameter Settings", className="text-center mt-3"),
+        html.P("Variation rate: Simulate the population growth for Valencia and Sagunto.", className="text-center ml-2"),
+        #Dropdown 
+        html.Div([
+            html.P("Set Variation rate:", className="text-center mt-1"),
+            dbc.Input(id="variation-rate-input",type="number", min=0.000, max=1.000, step=0.0001, value=initial_variation_rate,
+                      style={"width": "100px", "text-align": "center", "margin": "0 auto"})
+        ], id="variation-rate", style={"text-align": "center", "margin-bottom": "10px"}),
+        #simulation button
+        html.Div([
+           dbc.Button("Run Simulation", id="run-simulation", color="primary",className="text-center mt-0")
+       ],  style={"display": "flex", "justify-content": "center","align-items": "center", "margin-top": "20px",  "margin-bottom": "20px"})
+   ], style={"maxWidth": "500px", "margin": "0 auto","display": "flex","flex-direction": "column","align-items": "center"}, className="p-4 bg-light shadow rounded")
 
 def create_alarcon_page():
     return dbc.Container(fluid=True,children=[
         html.H1("Alarcón’s Reservoir", className="text-center mt-0"),
         dbc.Row([
-            dbc.Col(create_parameter_panel(), width=3,className="bg-light border-right",),
+            dbc.Col(create_parameter_panel_Alarcon(), width=3,className="bg-light border-right",),
             dbc.Col([
                 dbc.Spinner(
                 html.Div([
@@ -208,23 +208,16 @@ def create_population_growth_page():
     return dbc.Container(fluid=True, children=[
         html.H1("Population Growth Analysis", className="text-center mt-0"),
         dbc.Row([
-            dbc.Col(create_parameter_panel(), width=3, className="bg-light border-right"),
+            dbc.Col(create_parameter_panel_population(), width=3, className="bg-light border-right"),
             dbc.Col([
                 dbc.Spinner(
                     html.Div([
-                        html.P("Population Growth Dynamics: Analyze how population growth impacts resource demand."),
+                        html.P("Population Growth Dynamics: Analyze how population growth impacts urban demand."),
                         dcc.Graph(
-                            id="population-growth-graph",
+                            id="demand-graph",
                             figure={
-                                "data": [go.Scatter(x=months, y=np.random.rand(len(months)) * 1000, mode="lines", name="Population")],
-                                "layout": go.Layout(title="Population Growth Over Time", xaxis={"title": "Months"}, yaxis={"title": "Population (Thousands)"})
-                            }
-                        ),
-                        dcc.Graph(
-                            id="resource-demand-graph",
-                            figure={
-                                "data": [go.Scatter(x=months, y=np.random.rand(len(months)) * 500, mode="lines", name="Resource Demand")],
-                                "layout": go.Layout(title="Resource Demand Over Time", xaxis={"title": "Months"}, yaxis={"title": "Demand (Units)"})
+                                "data": [go.Scatter(x=months, y=initial_urban_demand, mode="lines", name="Total Demanda Urbana")],
+                                "layout": go.Layout(title="Total Demanda Urbana", xaxis={"title": "Months"}, yaxis={"title": "hm³"})
                             }
                         ),
                     ])
@@ -264,19 +257,6 @@ def update_page(pathname):
         return create_population_growth_page()
     return html.Div("404: Page Not Found")
 # Layout
-# app.layout = html.Div([
-#     dbc.Button("Menu", id="menu-toggle", color="primary", className="mb-2", style={"position": "fixed", "top": "10px", "left": "10px", "zIndex": 1000}),
-#     dbc.Collapse(
-#         create_menu(),
-#         id="menu-collapse",
-#         is_open=False,
-#     ),
-#     html.Div(
-#         [dcc.Location(id="url"), html.Div(id="page-content", style={"padding": "20px"})],
-#         id="main-content",
-#         style={"margin-left": "0px", "transition": "margin-left 0.3s ease"}
-#     )
-# ])
 app.layout = html.Div([
     dbc.Button("Menu", id="menu-toggle", color="primary", className="mb-2", style={"position": "fixed", "top": "10px", "left": "10px", "zIndex": 1000}),
     dbc.Collapse(create_menu(), id="menu-collapse", is_open=False),
@@ -323,23 +303,36 @@ def toggle_input(input_type):
 @app.callback(
     [Output("outflow-graph", "figure"),
       Output("deficit-graph", "figure")],
-    [State("qecolAlar-selector", "value"),  # Determines input type
-      State("qecolAlar-constant", "value"),   # Constant value
-      State("qecolAlar-dynamic", "value")],  # Dynamic value
     [Input("run-simulation", "n_clicks")],  # Button click to trigger
+    [State("qecolAlar-selector", "value"),  # Determines input type
+     State("qecolAlar-constant-input", "value"),  # Constant value
+     State("jan-value", "value"),  # Monthly dynamic values
+     State("feb-value", "value"),
+     State("mar-value", "value"),
+     State("apr-value", "value"),
+     State("may-value", "value"),
+     State("jun-value", "value"),
+     State("jul-value", "value"),
+     State("aug-value", "value"),
+     State("sep-value", "value"),
+     State("octo-value", "value"),
+     State("nov-value", "value"),
+     State("dec-value", "value")],
     prevent_initial_call=True
 )
 
 
-def update_Alarcon_graphs(input_type, slider_value,dropdown_value, n_clicks):
+def update_Alarcon_graphs(n_clicks,input_type, constant_value,jan, feb, mar, apr, may, jun, jul, aug, sep, octo, nov, dec):
     if n_clicks is None:
         raise dash.exceptions.PreventUpdate  # Prevent callback if no clicks
+    # Initial monthly vector
+    qecolAlar_values = []
     # Determine input value
-    if input_type == "slider" :
-        qecolAlar_value = slider_value 
+    if input_type == "option1" :
+        qecolAlar_values = [constant_value]*12
     else :
-        qecolAlar_value = dropdown_value
-        
+        qecolAlar_values = [jan, feb, mar, apr, may, jun, jul, aug, sep, octo, nov, dec]
+
     workbook = openpyxl.load_workbook("data.xlsx")
     sheet = workbook["Demandas"]
     column_name = "QecolAlar"
@@ -350,17 +343,14 @@ def update_Alarcon_graphs(input_type, slider_value,dropdown_value, n_clicks):
         if col.value == column_name:
             column_index = col.column  
             break
-      #find max index
-    # Technic : find the last row not empty of the column
-    last_row = 2  
-    for row in range(3, sheet.max_row+1): 
-        if sheet.cell(row=row, column=column_index).value is not None:
-           last_row = row  
-    # change the values of column QecoAlar with the value wanted and save it into data.xlsx to keep data_initial intact
-    for row in range(3, last_row + 1):
-        sheet.cell(row=row, column=column_index).value = qecolAlar_value
+      
+    # Write the  for years_sim years (years_sim x 12 rows)
+    current_row = 3  # Start from row 3 
+    for year in range(years_sim):  # Repeat for years_sim years
+        for month_index in range(12):  # Write one year (12 months) of data
+            sheet.cell(row=current_row, column=column_index).value = qecolAlar_values[month_index]
+            current_row += 1  
     workbook.save("data.xlsx")
-
     #rerun the model
     vensim_model = pysd.load('WEFE Jucar (Simple).py')
     variables_model = vensim_model.run(params={'INITIAL TIME': 1, 'FINAL TIME': 12*years_sim, 'TIME STEP': 1})
@@ -371,7 +361,7 @@ def update_Alarcon_graphs(input_type, slider_value,dropdown_value, n_clicks):
     outflow_figure = {
         "data": [
             go.Scatter(x=months, y=initial_outflow, mode="lines", name=f"Initial Outflow (QecoAlar = {initial_qecolAlar_value})", line=dict(dash="dot")),
-            go.Scatter(x=months, y=updated_outflow, mode="lines", name=f"Updated Outflow (QecoAlar = {qecolAlar_value})")
+            go.Scatter(x=months, y=updated_outflow, mode="lines", name="Updated Outflow")
         ],
         "layout": go.Layout(title="Outflow Over Time", xaxis={"title": "Months"}, yaxis={"title": "hm³"})
     }
@@ -383,6 +373,30 @@ def update_Alarcon_graphs(input_type, slider_value,dropdown_value, n_clicks):
     }
 
     return outflow_figure, deficit_figure
+
+@app.callback(
+    [Output("demand-graph", "figure")],
+    [Input("run-simulation", "n_clicks")],  # Button click to trigger
+    [State("variation-rate-input", "value")],  
+    prevent_initial_call=True
+)
+def update_population_graphs(n_clicks,variation_rate):
+    if n_clicks is None:
+        raise dash.exceptions.PreventUpdate  # Prevent callback if no clicks
+    
+    vensim_model = pysd.load('WEFE Jucar (Simple).py')
+    #change Variation and Activate 
+    variables_model = vensim_model.run(params={'INITIAL TIME': 1, 'FINAL TIME': 12*years_sim, 'TIME STEP': 1,'Variation Rate': variation_rate,'"Activar/Desactivar"' :1})
+    urban_demand = variables_model['Total Demanda Urbana']
+
+    urban_demand_figure = {
+        "data": [
+            go.Scatter(x=months, y=initial_urban_demand, mode="lines", name=f"Initial Urban demand (Variation rate = {initial_variation_rate})", line=dict(dash="dot")),
+            go.Scatter(x=months, y=urban_demand, mode="lines", name=f"Updated Urban demand  (Variation rate = {variation_rate})")
+        ],
+        "layout": go.Layout(title="Urban demand evolution", xaxis={"title": "Months"}, yaxis={"title": "hm³"})
+    }
+    return [urban_demand_figure]
 
 # Run the app
 if __name__ == "__main__":

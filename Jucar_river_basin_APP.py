@@ -26,14 +26,18 @@ import plotly.graph_objs as go
 workbook = openpyxl.load_workbook("data_initial.xlsx")
 workbook.save("data.xlsx")
 vensim_model = pysd.load('WEFE Jucar (Simple).py')
-initial_qecolAlar_value = 5.18
-qecolAlar_value = initial_qecolAlar_value
 years_sim = 10
 months = np.arange(1, (12*years_sim)+1)
 variables_model_initial = vensim_model.run(params={'INITIAL TIME': 1, 'FINAL TIME': 12*years_sim, 'TIME STEP': 1})
-
+#1.Alarcon initial values
+initial_qecolAlar_value = 5.18
+qecolAlar_value = initial_qecolAlar_value
 initial_outflow = variables_model_initial['Sal Jucar']
 initial_deficit = variables_model_initial['DéfQecolAlar']
+#1.Population growth initial value
+initial_variation_rate = 0.00018728
+variation_rate = initial_variation_rate
+initial_urban_demand = variables_model_initial['Total Demanda Urbana']
 
 # Initialize the Dash app
 app = Dash(__name__, external_stylesheets=[dbc.themes.FLATLY], suppress_callback_exceptions=True)
@@ -63,34 +67,39 @@ def create_home_page():
 def create_model_presentation():
     return html.Div([
         html.H1("Júcar River Basin Management Tool", className="text-center mt-0"),
-        dbc.Tabs([
-            dbc.Tab(label="View 1: SYSTEM NETWORK", children=[
-                html.P("Overview of the model"),
-                html.Img(src="/assets/View_1.PNG", style={"width": "80%", "margin": "auto", "display": "block"})
-            ]),
-            dbc.Tab(label="View 2", children=[
-                html.P("MANCHA ORIENTAL AQUIFER"),
-                html.Img(src="/assets/View_2.PNG", style={"width": "80%", "margin": "auto", "display": "block"})
-            ]),
-            dbc.Tab(label="View 3", children=[
-                html.P("WATER DEMAND, SUPPLY AND DEFICIT"),
-                html.Img(src="/assets/View_3.PNG", style={"width": "80%", "margin": "auto", "display": "block"})
-            ]),
-            dbc.Tab(label="View 4", children=[
-                html.P("RESERVOIRS OPERATING RULES"),
-                html.Img(src="/assets/View_4.PNG", style={"width": "80%", "margin": "auto", "display": "block"})
-            ]),
-            dbc.Tab(label="View 5", children=[
-                html.P("STATE INDEX"),
-                html.Img(src="/assets/View_5.PNG", style={"width": "80%", "margin": "auto", "display": "block"})
-            ]),
-            dbc.Tab(label="View Crops", children=[
-                html.P("CROPS"),
-                html.Img(src="/assets/Crops.PNG", style={"width": "80%", "margin": "auto", "display": "block"})
-            ]),
-        ])
+        dbc.Tabs(
+            [
+                dbc.Tab(label="View 1: SYSTEM NETWORK", children=[
+                    html.P("Overview of the model"),
+                    html.Img(src="/assets/View_1.PNG", style={"width": "100%", "margin": "auto", "display": "block"})
+                ]),
+                dbc.Tab(label="Aquifer", children=[
+                    html.P("View 2: MANCHA ORIENTAL AQUIFER"),
+                    html.Img(src="/assets/View_2.PNG", style={"width": "100%", "margin": "auto", "display": "block"})
+                ]),
+                dbc.Tab(label="Water demand, supply and deficit", children=[
+                    html.P("View 3: WATER DEMAND, SUPPLY AND DEFICIT"),
+                    html.Img(src="/assets/View_3.PNG", style={"width": "100%", "margin": "auto", "display": "block"})
+                ]),
+                dbc.Tab(label="Reservoirs operating rules", children=[
+                    html.P("View 4: RESERVOIRS OPERATING RULES"),
+                    html.Img(src="/assets/View_4.PNG", style={"width": "100%", "margin": "auto", "display": "block"})
+                ]),
+                dbc.Tab(label="State index", children=[
+                    html.P("View 5: STATE INDEX"),
+                    html.Img(src="/assets/View_5.PNG", style={"width": "100%", "margin": "auto", "display": "block"})
+                ]),
+                dbc.Tab(label="Crops", children=[
+                    html.P("View : CROPS"),
+                    html.Img(src="/assets/Crops.PNG", style={"width": "100%", "margin": "auto", "display": "block"})
+                ]),
+            ]
+        )
     ])
-def create_parameter_panel():
+
+
+
+def create_parameter_panel_Alarcon():
     return html.Div([
         html.H2("Parameter Settings", className="text-center mt-3"),
         html.P("QEcolAlar: This is the environmental flow downstream of Alarcon’s reservoir.", className="text-center ml-2"),
@@ -151,14 +160,33 @@ def create_parameter_panel():
         html.Div([
            dbc.Button("Run Simulation", id="run-simulation", color="primary",className="text-center mt-0")
        ],  style={"display": "flex", "justify-content": "center","align-items": "center", "margin-top": "20px",  "margin-bottom": "20px"})
-   ], style={"maxWidth": "500px", "margin": "0 auto","display": "flex","flex-direction": "column","align-items": "center"}, className="p-4 bg-light shadow rounded")
-
+   #], style={"maxWidth": "500px", "margin": "0 auto","display": "flex","flex-direction": "column","align-items": "center"}, className="p-4 bg-light shadow rounded")
+    ], style={"maxWidth": "600px", "margin": "20px auto", "padding": "20px", "boxShadow": "0 4px 8px rgba(0,0,0,0.1)","backgroundColor": "#dbe1e7","borderRadius": "8px","padding": "25px"})
+def create_parameter_panel_population():
+    return html.Div([
+        html.H2("Parameter Settings", className="text-center mt-3"),
+        html.P("Variation rate: Simulate the population growth for Valencia and Sagunto.", className="text-center ml-2"),
+        #Dropdown 
+        html.Div([
+            html.P("Set Variation rate:", className="text-center mt-1"),
+            dbc.Input(id="variation-rate-input",type="number", min=0.000, max=1.000, step=0.0001, value=initial_variation_rate,
+                      style={"width": "100px", "text-align": "center", "margin": "0 auto"})
+        ], id="variation-rate", style={"text-align": "center", "margin-bottom": "10px"}),
+        #simulation button
+        html.Div([
+           dbc.Button("Run Simulation", id="run-simulation", color="primary",className="text-center mt-0")
+       ],  style={"display": "flex", "justify-content": "center","align-items": "center", "margin-top": "20px",  "margin-bottom": "20px"})
+   ], style={"maxWidth": "500px", "margin": "0 auto","display": "flex","flex-direction": "column","align-items": "center","backgroundColor": "#dbe1e7","borderRadius": "8px","padding": "25px"}, 
+        className="p-4 bg-dark shadow rounded")
 
 def create_alarcon_page():
     return dbc.Container(fluid=True,children=[
         html.H1("Alarcón’s Reservoir", className="text-center mt-0"),
         dbc.Row([
-            dbc.Col(create_parameter_panel(), width=3,className="bg-light border-right",),
+            dbc.Col(create_parameter_panel_Alarcon(), width=3,
+                    #className="bg-light border-right",
+                    #style={"backgroundColor": "#003d70","padding": "25px","borderRadius": "8px", }
+                    ),
             dbc.Col([
                 dbc.Spinner(
                 html.Div([
@@ -184,23 +212,16 @@ def create_population_growth_page():
     return dbc.Container(fluid=True, children=[
         html.H1("Population Growth Analysis", className="text-center mt-0"),
         dbc.Row([
-            dbc.Col(create_parameter_panel(), width=3, className="bg-light border-right"),
+            dbc.Col(create_parameter_panel_population(), width=3, ),
             dbc.Col([
                 dbc.Spinner(
                     html.Div([
-                        html.P("Population Growth Dynamics: Analyze how population growth impacts resource demand."),
+                        html.P("Population Growth Dynamics: Analyze how population growth impacts urban demand."),
                         dcc.Graph(
-                            id="population-growth-graph",
+                            id="demand-graph",
                             figure={
-                                "data": [go.Scatter(x=months, y=np.random.rand(len(months)) * 1000, mode="lines", name="Population")],
-                                "layout": go.Layout(title="Population Growth Over Time", xaxis={"title": "Months"}, yaxis={"title": "Population (Thousands)"})
-                            }
-                        ),
-                        dcc.Graph(
-                            id="resource-demand-graph",
-                            figure={
-                                "data": [go.Scatter(x=months, y=np.random.rand(len(months)) * 500, mode="lines", name="Resource Demand")],
-                                "layout": go.Layout(title="Resource Demand Over Time", xaxis={"title": "Months"}, yaxis={"title": "Demand (Units)"})
+                                "data": [go.Scatter(x=months, y=initial_urban_demand, mode="lines", name="Total Demanda Urbana")],
+                                "layout": go.Layout(title="Total Demanda Urbana", xaxis={"title": "Months"}, yaxis={"title": "hm³"})
                             }
                         ),
                     ])
@@ -212,17 +233,19 @@ def create_population_growth_page():
 
 # Navigation menu
 def create_menu():
-    return html.Div(
-        dbc.ListGroup(
-            [
-                dbc.ListGroupItem("Home", href="/", active="exact"),
-                dbc.ListGroupItem("Model presentation", href="/model", active="exact"),
-                dbc.ListGroupItem("Alarcón’s Reservoir", href="/alarcon", active="exact"),
-                dbc.ListGroupItem("Population Growth", href="/population-growth", active="exact"),
-            ],
-        ),
-        style={"width": "250px", "position": "fixed", "left": "0", "top": "0", "background-color": "#f8f9fa", "padding": "45px 10px", "box-shadow": "2px 0 5px rgba(0,0,0,0.1)"}
+    return dbc.Nav(
+        [
+            dbc.NavLink("Home", href="/", active="exact", className="dropdown-item"),
+            dbc.NavLink("Model presentation", href="/model", active="exact", className="dropdown-item"),
+            dbc.NavLink("Alarcón’s Reservoir", href="/alarcon", active="exact", className="dropdown-item"),
+            dbc.NavLink("Population Growth", href="/population-growth", active="exact", className="dropdown-item"),
+        ],
+        pills=True,
+        vertical=True,
+        className="navbar",
+        style={"width": "250px","position": "fixed","left": "0","top": "0","background-color": "#f8f9fa","padding": "45px 10px","box-shadow": "2px 0 5px rgba(0,0,0,0.1)",},
     )
+
 
 # Update page routing
 @app.callback(
@@ -316,7 +339,6 @@ def update_Alarcon_graphs(n_clicks,input_type, constant_value,jan, feb, mar, apr
     else :
         qecolAlar_values = [jan, feb, mar, apr, may, jun, jul, aug, sep, octo, nov, dec]
 
-    print(qecolAlar_values)
     workbook = openpyxl.load_workbook("data.xlsx")
     sheet = workbook["Demandas"]
     column_name = "QecolAlar"
@@ -357,6 +379,30 @@ def update_Alarcon_graphs(n_clicks,input_type, constant_value,jan, feb, mar, apr
     }
 
     return outflow_figure, deficit_figure
+
+@app.callback(
+    [Output("demand-graph", "figure")],
+    [Input("run-simulation", "n_clicks")],  # Button click to trigger
+    [State("variation-rate-input", "value")],  
+    prevent_initial_call=True
+)
+def update_population_graphs(n_clicks,variation_rate):
+    if n_clicks is None:
+        raise dash.exceptions.PreventUpdate  # Prevent callback if no clicks
+    
+    vensim_model = pysd.load('WEFE Jucar (Simple).py')
+    #change Variation and Activate 
+    variables_model = vensim_model.run(params={'INITIAL TIME': 1, 'FINAL TIME': 12*years_sim, 'TIME STEP': 1,'Variation Rate': variation_rate,'"Activar/Desactivar"' :1})
+    urban_demand = variables_model['Total Demanda Urbana']
+
+    urban_demand_figure = {
+        "data": [
+            go.Scatter(x=months, y=initial_urban_demand, mode="lines", name=f"Initial Urban demand (Variation rate = {initial_variation_rate})", line=dict(dash="dot")),
+            go.Scatter(x=months, y=urban_demand, mode="lines", name=f"Updated Urban demand  (Variation rate = {variation_rate})")
+        ],
+        "layout": go.Layout(title="Urban demand evolution", xaxis={"title": "Months"}, yaxis={"title": "hm³"})
+    }
+    return [urban_demand_figure]
 
 # Run the app
 if __name__ == "__main__":
