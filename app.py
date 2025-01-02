@@ -153,18 +153,38 @@ def create_alarcon_page():
 app.layout = dbc.Container(fluid=True, children=[
     dbc.Row([
         dbc.Col(
-            dbc.Card([
-                dbc.CardHeader("Menu", className="bg-dark text-white text-center py-3"),
-                dbc.ListGroup([
-                    dbc.ListGroupItem("Home", href="/", active="exact", className="text-dark"),
-                    dbc.ListGroupItem("Model presentation", href="/model", active="exact", className="text-dark"),
-                    dbc.ListGroupItem("Alarcón’s Reservoir", href="/alarcon", active="exact", className="text-dark"),
-                ]),],
-                className="shadow-sm", style={"height": "100vh"}), width=1.5),
+            html.Div([
+                dbc.Button("Menu",id="menu-toggle",color="primary",className="mb-0 w-50"  ),
+                dbc.Collapse(
+                    dbc.Card([
+                        dbc.ListGroup([
+                            dbc.ListGroupItem("Home", href="/", active="exact", className="text-white"),
+                            dbc.ListGroupItem("Model presentation", href="/model", active="exact", className="text-white"),
+                            dbc.ListGroupItem("Alarcón’s Reservoir", href="/alarcon", active="exact", className="text-white"),
+                        ]),
+                    ], className="shadow-sm"),
+                    id="menu-collapse",
+                    is_open=False  # Initially collapsed
+                )
+            ]),
+            width=2
+        ),
         dbc.Col(
-            [dcc.Location(id="url"), html.Div(id="page-content", style={"padding": "20px"})],   width=10)
-        ])
+            [dcc.Location(id="url"), html.Div(id="page-content", style={"padding": "20px"})],
+            width=10
+        )
     ])
+])
+
+@app.callback(
+    Output("menu-collapse", "is_open"),  # Control the is_open state of the Collapse
+    Input("menu-toggle", "n_clicks"),  # Triggered when the toggle button is clicked
+    State("menu-collapse", "is_open")  # Store the current state of the Collapse
+)
+def toggle_menu(n_clicks, is_open):
+    if n_clicks:
+        return not is_open  # Toggle the state
+    return is_open  # Keep the current state if no click
 
 # Callbacks
 @app.callback(

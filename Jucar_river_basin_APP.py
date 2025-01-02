@@ -90,83 +90,141 @@ def create_model_presentation():
             ]),
         ])
     ])
+def create_parameter_panel():
+    return html.Div([
+        html.H2("Parameter Settings", className="text-center mt-3"),
+        html.P("QEcolAlar: This is the environmental flow downstream of Alarcon’s reservoir.", className="text-center ml-2"),
+        html.Div([
+            # choose between slider and dropdown
+            html.P("Select Input Type:"),
+            dbc.RadioItems(
+                id="qecolAlar-selector",
+                options=[
+                    {"label": "Constant value", "value": "option1"},
+                    {"label": "Monthly dynamic values", "value": "option2"},
+                ],
+                inline=True,
+                value="option1",# Default selection
+                className="mb-3"
+            ),
+        ], className="p-4 bg-light shadow rounded", style={ "margin-bottom": "20px"}),
+        # Option 1 : Dropdown for constant input 
+        html.Div([
+            html.P("Set a constant Qeco:", className="text-center mt-1"),
+            dbc.Input(id="qecolAlar-constant-input",type="number", min=0.0, max=10.0, step=0.1, value=initial_qecolAlar_value,
+                      style={"width": "100px", "text-align": "center", "margin": "0 auto"})
+        ], id="qecolAlar-constant", style={"text-align": "center", "margin-bottom": "20px"}),
+
+        # Option 2 : Dynamic dropdown for 12 months for dynamic input
+        html.Div([
+            html.P("Set a Qeco for each month:", className="text-center mt-1"),
+            html.Div([
+                dbc.Row([
+                    dbc.Col([html.Label("January"), dbc.Input(type="number", id="jan-value", min=0.0, max=10.0, step=0.1, value=initial_qecolAlar_value)], width=6),
+                    dbc.Col([html.Label("February"), dbc.Input(type="number", id="feb-value", min=0.0, max=10.0, step=0.1, value=initial_qecolAlar_value)], width=6),
+                ], className="mb-2"),
+                dbc.Row([
+                    dbc.Col([html.Label("March"), dbc.Input(type="number", id="mar-value", min=0.0, max=10.0, step=0.1, value=initial_qecolAlar_value)], width=6),
+                    dbc.Col([html.Label("April"), dbc.Input(type="number", id="apr-value", min=0.0, max=10.0, step=0.1, value=initial_qecolAlar_value)], width=6),
+                ], className="mb-2"),
+                dbc.Row([
+                    dbc.Col([html.Label("May"), dbc.Input(type="number", id="may-value",min=0.0, max=10.0, step=0.1, value=initial_qecolAlar_value)], width=6),
+                    dbc.Col([html.Label("June"), dbc.Input(type="number", id="jun-value", min=0.0, max=10.0, step=0.1, value=initial_qecolAlar_value)], width=6),
+                ], className="mb-2"),
+                dbc.Row([
+                    dbc.Col([html.Label("July"), dbc.Input(type="number", id="jul-value", min=0.0, max=10.0, step=0.1, value=initial_qecolAlar_value)], width=6),
+                    dbc.Col([html.Label("August"), dbc.Input(type="number", id="aug-value", min=0.0, max=10.0, step=0.1, value=initial_qecolAlar_value)], width=6),
+                ], className="mb-2"),
+                dbc.Row([
+                    dbc.Col([html.Label("September"), dbc.Input(type="number", id="sep-value", min=0.0, max=10.0, step=0.1, value=initial_qecolAlar_value)], width=6),
+                    dbc.Col([html.Label("October"), dbc.Input(type="number", id="octo-value",min=0.0, max=10.0, step=0.1, value=initial_qecolAlar_value)], width=6),
+                ], className="mb-2"),
+                dbc.Row([
+                    dbc.Col([html.Label("November"), dbc.Input(type="number", id="nov-value", min=0.0, max=10.0, step=0.1, value=initial_qecolAlar_value)], width=6),
+                    dbc.Col([html.Label("December"), dbc.Input(type="number", id="dec-value", min=0.0, max=10.0, step=0.1, value=initial_qecolAlar_value)], width=6),
+                ])
+            ])
+        ], id="qecolAlar-dynamic", 
+            style={"display": "none", "margin-bottom": "20px","margin-top": "20px"},
+            className="text-center mt-0"),
+        #simulation button
+        html.Div([
+           dbc.Button("Run Simulation", id="run-simulation", color="primary",className="text-center mt-0")
+       ],  style={"display": "flex", "justify-content": "center","align-items": "center", "margin-top": "20px",  "margin-bottom": "20px"})
+   ], style={"maxWidth": "500px", "margin": "0 auto","display": "flex","flex-direction": "column","align-items": "center"}, className="p-4 bg-light shadow rounded")
+
 
 def create_alarcon_page():
-    # choose between slider and dropdown
-    select_input_type = html.Div([
-         html.P("Select Input Type:", className="text-center ml-2"),
-         dbc.RadioItems(id="qecolAlar-selector", options=[{"label": "Constant (Slider)", "value": "slider"},{"label": "Vary Monthly (Dropdown)", "value": "dropdown"},],inline=True,value="slider",className="mb-3")
-         ])
-    # Slider for constant input
-    qecolAlar_slider = html.Div([
-        html.P("QEcolAlar: This is the environmental flow downstream of Alarcon’s reservoir.", className="text-center ml-2"),
-        dcc.Slider(min=0.0, max=10.0,step=0.1,value=initial_qecolAlar_value,marks={i: str(i) for i in range(0, 11)})],
-        id="qecolAlar-slider",
-        style={"display": "none", "width": "5%", "margin": "0 auto"} # Initially hidden
-        ) 
-    
-    qecolAlar_dropdown = html.Div([
-        html.P("QEcolAlar: This is the environmental flow downstream of Alarcon’s reservoir.", className="text-start ml-2"),
-        dbc.Input(type="number", min=0.0, max=10.0,step=0.1,value=initial_qecolAlar_value)],
-        id="qecolAlar-dropdown",
-        style={"display": "none","width": "5%", "margin": "0 auto"} # Initially hidden
-        )
-
-    run_simulation = html.Div([
-        dbc.Button("Run Simulation",  color="primary", className="text-start ml-2")],
-        id="run-simulation",
-        style={"display": "none", "width": "5%", "margin": "0 auto"} # Initially hidden
-        ) 
-    
-    result_section = dbc.Spinner(
-        html.Div([
-            html.P("DéfQEcolAlar: is the deficit regarding the environmental flow. ", className="text-start ml-2"),
-            dcc.Graph(
-                id="outflow-graph",
-                figure={
-                    "data": [go.Scatter(x=months, y=initial_outflow, mode="lines", name="Outflow")],
-                    "layout": go.Layout(title="Outflow Over Time", xaxis={"title": "Months"}, yaxis={"title": "hm³"})
-                }
-            ),
-            dcc.Graph(
-                id="deficit-graph",
-                figure={
-                    "data": [go.Scatter(x=months, y=initial_deficit, mode="lines", name="Deficit")],
-                    "layout": go.Layout(title="Deficit Over Time (DéfQEcolAlar)", xaxis={"title": "Months"}, yaxis={"title": "hm³"})
-                }
-            )
+    return dbc.Container(fluid=True,children=[
+        html.H1("Alarcón’s Reservoir", className="text-center mt-0"),
+        dbc.Row([
+            dbc.Col(create_parameter_panel(), width=3,className="bg-light border-right",),
+            dbc.Col([
+                dbc.Spinner(
+                html.Div([
+                    html.P("DéfQEcolAlar: Deficit regarding the environmental flow."),
+                    dcc.Graph(
+                        id="outflow-graph",
+                        figure={
+                            "data": [go.Scatter(x=months, y=initial_outflow, mode="lines", name="Outflow")],
+                            "layout": go.Layout(title="Outflow Over Time", xaxis={"title": "Months"}, yaxis={"title": "hm³"})
+                        }),
+                    dcc.Graph(
+                        id="deficit-graph",
+                        figure={
+                            "data": [go.Scatter(x=months, y=initial_deficit, mode="lines", name="Deficit")],
+                            "layout": go.Layout(title="Deficit Over Time (DéfQEcolAlar)", xaxis={"title": "Months"}, yaxis={"title": "hm³"})
+                        }),
+                ]))
+            ], width=9),
         ])
+    ])
+
+def create_population_growth_page():
+    return dbc.Container(fluid=True, children=[
+        html.H1("Population Growth Analysis", className="text-center mt-0"),
+        dbc.Row([
+            dbc.Col(create_parameter_panel(), width=3, className="bg-light border-right"),
+            dbc.Col([
+                dbc.Spinner(
+                    html.Div([
+                        html.P("Population Growth Dynamics: Analyze how population growth impacts resource demand."),
+                        dcc.Graph(
+                            id="population-growth-graph",
+                            figure={
+                                "data": [go.Scatter(x=months, y=np.random.rand(len(months)) * 1000, mode="lines", name="Population")],
+                                "layout": go.Layout(title="Population Growth Over Time", xaxis={"title": "Months"}, yaxis={"title": "Population (Thousands)"})
+                            }
+                        ),
+                        dcc.Graph(
+                            id="resource-demand-graph",
+                            figure={
+                                "data": [go.Scatter(x=months, y=np.random.rand(len(months)) * 500, mode="lines", name="Resource Demand")],
+                                "layout": go.Layout(title="Resource Demand Over Time", xaxis={"title": "Months"}, yaxis={"title": "Demand (Units)"})
+                            }
+                        ),
+                    ])
+                )
+            ], width=9),
+        ])
+    ])
+
+
+# Navigation menu
+def create_menu():
+    return html.Div(
+        dbc.ListGroup(
+            [
+                dbc.ListGroupItem("Home", href="/", active="exact"),
+                dbc.ListGroupItem("Model presentation", href="/model", active="exact"),
+                dbc.ListGroupItem("Alarcón’s Reservoir", href="/alarcon", active="exact"),
+                dbc.ListGroupItem("Population Growth", href="/population-growth", active="exact"),
+            ],
+        ),
+        style={"width": "250px", "position": "fixed", "left": "0", "top": "0", "background-color": "#f8f9fa", "padding": "45px 10px", "box-shadow": "2px 0 5px rgba(0,0,0,0.1)"}
     )
 
-    return html.Div([
-        html.H1("Alarcón’s Reservoir", className="text-center mt-0"),
-        # collapse,
-        html.P("Use the slider and run the simulation."),
-        select_input_type,
-        qecolAlar_slider,
-        qecolAlar_dropdown,
-        run_simulation,
-        result_section
-    ])
-
-# Layout
-app.layout = dbc.Container(fluid=True, children=[
-    dbc.Row([
-        dbc.Col(
-            dbc.Card([
-                dbc.CardHeader("Menu", className="bg-dark text-white text-center py-3"),
-                dbc.ListGroup([
-                    dbc.ListGroupItem("Home", href="/", active="exact", className="text-dark"),
-                    dbc.ListGroupItem("Model presentation", href="/model", active="exact", className="text-dark"),
-                    dbc.ListGroupItem("Alarcón’s Reservoir", href="/alarcon", active="exact", className="text-dark"),
-                ]),],
-                className="shadow-sm", style={"height": "100vh"}), width=1.5),
-        dbc.Col(
-            [dcc.Location(id="url"), html.Div(id="page-content", style={"padding": "20px"})],   width=10)
-        ])
-    ])
-
-# Callbacks
+# Update page routing
 @app.callback(
     Output("page-content", "children"),
     Input("url", "pathname")
@@ -178,37 +236,87 @@ def update_page(pathname):
         return create_model_presentation()
     elif pathname == "/alarcon":
         return create_alarcon_page()
+    elif pathname == "/population-growth":
+        return create_population_growth_page()
     return html.Div("404: Page Not Found")
+# Layout
+app.layout = html.Div([
+    dbc.Button("Menu", id="menu-toggle", color="primary", className="mb-2", style={"position": "fixed", "top": "10px", "left": "10px", "zIndex": 1000}),
+    dbc.Collapse(create_menu(), id="menu-collapse", is_open=False),
+    html.Div([
+        dcc.Location(id="url"),
+        html.Div(id="page-content", style={"padding": "20px"})
+    ], id="main-content", style={"margin-left": "0px", "transition": "margin-left 0.3s ease"})
+])
+
+
+@app.callback(
+    [Output("menu-collapse", "is_open"),# Control the is_open state of the Collapse
+     Output("main-content", "style")],
+    [Input("menu-toggle", "n_clicks")],# Triggered when the toggle button is clicked
+    [State("menu-collapse", "is_open")], # Store the current state of the Collapse
+)
+def toggle_menu(n_clicks, is_open):
+    if n_clicks:
+        if not is_open:
+            return True, {"margin-left": "250px", "transition": "margin-left 0.3s ease"}
+        return False, {"margin-left": "0px", "transition": "margin-left 0.3s ease"}
+    return is_open, {"margin-left": "0px", "transition": "margin-left 0.3s ease"}
+
 
 #selection of slider_value
 @app.callback(
-    [Output("qecolAlar-slider", "style"),
-     Output("qecolAlar-dropdown", "style"),
+    [Output("qecolAlar-constant", "style"),
+     Output("qecolAlar-dynamic", "style"),
      Output("run-simulation", "style")],
     Input("qecolAlar-selector", "value")
 )
+
+
 def toggle_input(input_type):
-    if input_type == "slider":
-        return {"display": "block"}, {"display": "none"}, {"display": "block"}
-    elif input_type == "dropdown":
-        return {"display": "none"}, {"display": "block"}, {"display": "block"}
-    return {"display": "none"}, {"display": "none"}, {"display": "none"}
+    if input_type == "option1":
+        # Show dropdown constant, hide dropdown monthly
+        return {"display": "block"}, {"display": "none"}, {"display": "block", "margin-bottom": "20px"}
+    elif input_type == "option2":
+        # Show dropdown, hide slider
+        return {"display": "none"}, {"display": "block", "margin-bottom": "20px","margin-top": "20px"} ,{"display": "block", "margin-bottom": "20px"}
+    # If no option is selected, hide both
+    return {"display": "none"}, {"display": "none"},{"display": "none"}
 
 @app.callback(
     [Output("outflow-graph", "figure"),
-     Output("deficit-graph", "figure")],
-    [State("qecolAlar-selector", "value"),  # Use slider value as state
-    State("qecolAlar-slider", "value"),  # Use slider value as state
-    State("qecolAlar-dropdown", "value")],  # Use slider value as state
-    [Input("run-simulation", "n_clicks")],  # Trigger only on button click
+      Output("deficit-graph", "figure")],
+    [Input("run-simulation", "n_clicks")],  # Button click to trigger
+    [State("qecolAlar-selector", "value"),  # Determines input type
+     State("qecolAlar-constant-input", "value"),  # Constant value
+     State("jan-value", "value"),  # Monthly dynamic values
+     State("feb-value", "value"),
+     State("mar-value", "value"),
+     State("apr-value", "value"),
+     State("may-value", "value"),
+     State("jun-value", "value"),
+     State("jul-value", "value"),
+     State("aug-value", "value"),
+     State("sep-value", "value"),
+     State("octo-value", "value"),
+     State("nov-value", "value"),
+     State("dec-value", "value")],
     prevent_initial_call=True
 )
-def update_Alarcon_graphs(input_type, slider_value,dropdown_value, n_clicks):
+
+
+def update_Alarcon_graphs(n_clicks,input_type, constant_value,jan, feb, mar, apr, may, jun, jul, aug, sep, octo, nov, dec):
     if n_clicks is None:
         raise dash.exceptions.PreventUpdate  # Prevent callback if no clicks
-    """
+    # Initial monthly vector
+    qecolAlar_values = []
     # Determine input value
-    qecolAlar_value = slider_value if input_type == "slider" else dropdown_value
+    if input_type == "option1" :
+        qecolAlar_values = [constant_value]*12
+    else :
+        qecolAlar_values = [jan, feb, mar, apr, may, jun, jul, aug, sep, octo, nov, dec]
+
+    print(qecolAlar_values)
     workbook = openpyxl.load_workbook("data.xlsx")
     sheet = workbook["Demandas"]
     column_name = "QecolAlar"
@@ -219,17 +327,14 @@ def update_Alarcon_graphs(input_type, slider_value,dropdown_value, n_clicks):
         if col.value == column_name:
             column_index = col.column  
             break
-      #find max index
-    # Technic : find the last row not empty of the column
-    last_row = 2  
-    for row in range(3, sheet.max_row+1): 
-        if sheet.cell(row=row, column=column_index).value is not None:
-           last_row = row  
-    # change the values of column QecoAlar with the value wanted and save it into data.xlsx to keep data_initial intact
-    for row in range(3, last_row + 1):
-        sheet.cell(row=row, column=column_index).value = qecolAlar_value
+      
+    # Write the  for years_sim years (years_sim x 12 rows)
+    current_row = 3  # Start from row 3 
+    for year in range(years_sim):  # Repeat for years_sim years
+        for month_index in range(12):  # Write one year (12 months) of data
+            sheet.cell(row=current_row, column=column_index).value = qecolAlar_values[month_index]
+            current_row += 1  
     workbook.save("data.xlsx")
-    print(qecolAlar_value)
     #rerun the model
     vensim_model = pysd.load('WEFE Jucar (Simple).py')
     variables_model = vensim_model.run(params={'INITIAL TIME': 1, 'FINAL TIME': 12*years_sim, 'TIME STEP': 1})
@@ -240,7 +345,7 @@ def update_Alarcon_graphs(input_type, slider_value,dropdown_value, n_clicks):
     outflow_figure = {
         "data": [
             go.Scatter(x=months, y=initial_outflow, mode="lines", name=f"Initial Outflow (QecoAlar = {initial_qecolAlar_value})", line=dict(dash="dot")),
-            go.Scatter(x=months, y=updated_outflow, mode="lines", name=f"Updated Outflow (QecoAlar = {qecolAlar_value})")
+            go.Scatter(x=months, y=updated_outflow, mode="lines", name="Updated Outflow")
         ],
         "layout": go.Layout(title="Outflow Over Time", xaxis={"title": "Months"}, yaxis={"title": "hm³"})
     }
@@ -251,7 +356,7 @@ def update_Alarcon_graphs(input_type, slider_value,dropdown_value, n_clicks):
         "layout": go.Layout(title="Deficit Over Time", xaxis={"title": "Months"}, yaxis={"title": "hm³"})
     }
 
-    return outflow_figure, deficit_figure"""
+    return outflow_figure, deficit_figure
 
 # Run the app
 if __name__ == "__main__":
