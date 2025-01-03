@@ -370,6 +370,47 @@ def create_population_growth_page():
                             ], width=9,),
                     ]),
             ],)
+### 5. Diverse Graphs pages
+## 5.1 parameter panel
+def create_parameter_panel_divers():
+    variable_headers = list(variables_model_initial.columns)
+    return html.Div([
+        html.H3("Parameter Settings", className="text-center mt-3"),
+        html.P("Explore diverse visualizations of the Júcar River Basin data.", className="text-center mt-1"),
+        html.Div([
+            dbc.Select(
+                id="selected",
+                options=[{"label": header, "value": header} for header in variable_headers],  # Correct way to set options
+                placeholder="Select a graph",
+                style={"width": "100%", "text-align": "center", "margin": "0 auto"}
+            )
+        ], id="divers", style={"text-align": "center", "margin-bottom": "10px"}),
+
+        # Simulation button
+        html.Div([
+            dbc.Button("Run Simulation", id="run-simulation", color="primary", className="text-center mt-0")
+        ], style={"display": "flex", "justify-content": "center", "align-items": "center", "margin-top": "20px", "margin-bottom": "20px"})
+    ], style={"maxWidth": "600px", "margin": "20px auto", "boxShadow": "0 4px 8px rgba(0,0,0,0.1)", "backgroundColor": "#dbe1e7", "borderRadius": "8px", "padding": "25px"})
+
+def create_divers_graphs_page():
+    return dbc.Container(fluid=True,children=[
+            html.H1("Diverse Graphs", className="text-center mt-0"),
+            dbc.Row([
+                    dbc.Col(create_parameter_panel_divers(), width=3),
+                    dbc.Col([
+                            dbc.Spinner(
+                                html.Div([
+                                        html.Div([
+                                                dcc.Graph(id="divers-graph",
+                                                    figure={},
+                                                        ),
+                                                ],style={"border": "0.5px solid rgba(15, 55, 94, 0.3)","padding": "15px", "box-shadow": "0 4px 8px rgba(0, 0, 0, 0.1)","background-color": "#ffffff",},),
+                                        ])
+                                        )
+                            ], width=9,),
+                    ]),
+            ],)
+
 
 
 # Navigation menu
@@ -380,6 +421,7 @@ def create_menu():
             dbc.NavLink("Model presentation", href="/model", active="exact", className="dropdown-item"),
             dbc.NavLink("Alarcón’s Reservoir", href="/alarcon", active="exact", className="dropdown-item"),
             dbc.NavLink("Population Growth", href="/population-growth", active="exact", className="dropdown-item"),
+            dbc.NavLink("Diverse Graphs", href="/diverse-graphs", active="exact", className="dropdown-item"),
         ],
         pills=True,
         vertical=True,
@@ -402,6 +444,8 @@ def update_page(pathname):
         return create_alarcon_page()
     elif pathname == "/population-growth":
         return create_population_growth_page()
+    elif pathname == "/diverse-graphs":
+        return create_divers_graphs_page()
     return html.Div("404: Page Not Found")
 # Layout
 app.layout = html.Div([
@@ -606,6 +650,31 @@ def update_population_graphs(n_clicks, variation_rate):
     )
 
     return urban_demand_figure
+
+#5.3 divers callback
+@app.callback(
+    Output("divers-graph", "figure"),
+    [Input("run-simulation", "n_clicks")],  # Button click to trigger
+    [State("selected", "value")],
+    prevent_initial_call=True
+)
+def update_divers_graphs(n_clicks, chosen_graph):
+    if n_clicks is None:
+        raise dash.exceptions.PreventUpdate  # Prevent callback if no clicks
+
+    simulated_parameter = variables_model_initial[chosen_graph]
+
+    # Create a Plotly figure for urban demand
+    figure = go.Figure()
+    # initial urban demand trace
+    figure.add_trace(
+        go.Scatter(x=months,y=simulated_parameter,mode="lines")
+    )
+    figure.update_layout(
+        title=f"{chosen_graph} Evolution",xaxis=dict(title="Months"),yaxis=dict(title="hm³"),margin=dict(l=40, r=40, t=40, b=40), template="plotly_white", legend={"orientation": "v", "x": 1,"y": 0.9, "xanchor": "right", "yanchor": "top", },
+    )
+    return figure
+
 
 
 # Run the app
